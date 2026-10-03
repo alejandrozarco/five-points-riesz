@@ -1,7 +1,7 @@
 """Independent exact checker for cert_n5_s2.json (N = 5 points on S^2, Riesz s = 2).
 
 Reads only the JSON and recomputes everything exactly: rational arithmetic (sympy polynomial rings over QQ,
-python-flint), plus exact algebraic eigenvalue comparisons in the uniqueness enumeration. It does not import the code
+python-flint), and an exact principal-minor PSD test in the uniqueness enumeration. It does not import the code
 that produced the certificate. All checks are assertions; the script refuses to run with python -O.
 
 Claim checked (A)-(C):
@@ -112,6 +112,10 @@ quo, rem = div(pnum, Poly((x + 1) * (2 * x + 1) ** 2 * x ** 2, x))
 assert rem.is_zero and quo.count_roots(-1, 1) == 0 and quo.eval(0) > 0
 print(f"(C) 1-(2-2x)H(x) = (x+1)(2x+1)^2 x^2 q(x), q > 0 on [-1,1] (deg q = {quo.degree()})", flush=True)
 
+def psd_exact(G):
+    """exact: a real symmetric matrix is PSD iff all its principal minors are >= 0."""
+    m = G.shape[0]
+    return all(G.extract(list(S_), list(S_)).det() >= 0 for r_ in range(1, m + 1) for S_ in itertools.combinations(range(m), r_))
 # (D) uniqueness by enumeration of Gram matrices with entries in {-1, -1/2, 0}
 vals = [Fr(-1), Fr(-1, 2), Fr(0)]; phi = {Fr(-1): Fr(1, 4), Fr(-1, 2): Fr(1, 3), Fr(0): Fr(1, 2)}
 pairs = list(itertools.combinations(range(5), 2)); found = []; feasible = 0
@@ -120,7 +124,7 @@ for combo in itertools.product(vals, repeat=10):
     for (i, j), c in zip(pairs, combo): G[i][j] = G[j][i] = c
     M = Matrix(5, 5, lambda i, j: Rational(G[i][j].numerator, G[i][j].denominator))
     if M.rank() > 3: continue
-    if any(ev < 0 for ev in M.eigenvals(multiple=True)): continue   # PSD (exact, algebraic eigenvalues)
+    if not psd_exact(M): continue                                  # PSD (exact rational principal minors)
     feasible += 1
     E = sum(phi[c] for c in combo)
     if E <= Fr(17, 4): found.append((E, combo))

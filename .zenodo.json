@@ -1,5 +1,5 @@
 {
-  "title": "Five points on the sphere, Riesz s = 2: one exact three-point certificate",
+  "title": "Five points on the sphere: exact three-point certificates for the Coulomb and Riesz s = 2 energies",
   "upload_type": "software",
   "creators": [
     {
@@ -7,7 +7,7 @@
     }
   ],
   "license": "Apache-2.0",
-  "description": "<p>An AI-produced warrant (a computer-checked certificate that no human has digested). An exact rational three-point semidefinite-programming certificate, with an independent exact checker, that the triangular bipyramid uniquely minimises the Riesz s = 2 energy of five distinct points on the unit sphere. The theorem is known (R. E. Schwartz, Exp. Math. 2013, and later work); what is offered is the form of the certificate: a single sharp three-point certificate for the lower bound, without case analysis or interval arithmetic; uniqueness uses a finite Gram-matrix enumeration. Not peer reviewed.</p>",
+  "description": "<p>An AI-produced warrant (computer-checked certificates that no human has digested). Exact three-point semidefinite-programming certificates, with independent exact checkers, that the triangular bipyramid uniquely minimises the Coulomb energy (s = 1, the five-electron Thomson problem) and the Riesz s = 2 energy of five distinct points on the unit sphere. The theorems are known (R. E. Schwartz, Exp. Math. 2013, and later work); what is offered is the form of the certificates: for each energy a single sharp three-point certificate for the lower bound, without subdivision of the configuration space (rational for s = 2, over Q(sqrt2, sqrt3) for s = 1); uniqueness uses a finite Gram-matrix enumeration. Not peer reviewed.</p>",
   "keywords": [
     "Riesz energy",
     "Thomson problem",
@@ -16,8 +16,13 @@
     "three-point bound",
     "computer-checked certificate"
   ],
-  "notes": "Not peer reviewed. Produced by AI models (Claude Opus 5.5; review by gpt-6-astra) under the direction of the repository owner; see AI_DISCLOSURE.md.",
+  "notes": "Not peer reviewed. Produced by AI models (Claude Opus 5.5; reviews by gpt-6-astra and Claude Fable 5.1) under the direction of the repository owner; see AI_DISCLOSURE.md. Version 2 adds the Coulomb (s = 1) certificate to the s = 2 certificate of version 1.",
   "related_identifiers": [
+    {
+      "identifier": "arXiv:1001.3702",
+      "relation": "references",
+      "resource_type": "publication-article"
+    },
     {
       "identifier": "arXiv:2301.05090",
       "relation": "references",

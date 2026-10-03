@@ -1,16 +1,17 @@
 cff-version: 1.2.0
 message: "If you use this material, please cite it as below. Not peer reviewed. Produced by AI models under the direction of the repository owner (see AI_DISCLOSURE.md)."
-title: "Five points on the sphere, Riesz s = 2: one exact three-point certificate"
+title: "Five points on the sphere: exact three-point certificates for the Coulomb and Riesz s = 2 energies"
 type: software
 doi: "10.5281/zenodo.23125753"
 authors:
   - name: alejandrozarco
-repository-code: "https://github.com/alejandrozarco/five-points-riesz2"
+repository-code: "https://github.com/alejandrozarco/five-points-riesz"
 abstract: >-
-  An exact rational three-point semidefinite-programming certificate, with an independent exact checker, that the
-  triangular bipyramid uniquely minimises the Riesz s = 2 energy of five distinct points on the unit sphere. The
-  theorem is known (Schwartz); the lower bound is a single sharp three-point certificate without case analysis; uniqueness uses a finite Gram-matrix enumeration. AI-produced;
-  not peer reviewed.
+  Exact three-point semidefinite-programming certificates, with independent exact checkers, that the triangular
+  bipyramid uniquely minimises the Coulomb (s = 1; the five-electron Thomson problem) and the Riesz s = 2 energy of
+  five distinct points on the unit sphere. The theorems are known (Schwartz). Each lower bound is a single sharp
+  three-point certificate without subdivision of the configuration space (rational for s = 2, over Q(sqrt2, sqrt3) for s = 1); uniqueness uses
+  a finite Gram-matrix enumeration. AI-produced; not peer reviewed.
 keywords:
   - Riesz energy
   - Thomson problem
@@ -27,12 +28,16 @@ references:
     journal: "Experimental Mathematics"
     volume: 22
     year: 2013
+    identifiers:
+      - {type: url, value: "https://arxiv.org/abs/1001.3702"}
   - type: article
     title: "Moment methods in energy minimization: new bounds for Riesz minimal energy problems"
     authors:
       - {given-names: David, family-names: de Laat}
     journal: "Transactions of the American Mathematical Society"
-    year: 2019
+    volume: 373
+    year: 2020
+    doi: "10.1090/tran/7976"
     identifiers:
       - {type: url, value: "https://arxiv.org/abs/1610.04905"}
   - type: article
@@ -57,6 +62,15 @@ references:
     journal: "Journal of the American Mathematical Society"
     volume: 21
     year: 2008
+  - type: article
+    title: "Discrete logarithmic energy on the sphere"
+    authors:
+      - {given-names: Peter D., family-names: Dragnev}
+      - {given-names: D. A., family-names: Legg}
+      - {given-names: D. W., family-names: Townsend}
+    journal: "Pacific Journal of Mathematics"
+    volume: 207
+    year: 2002
   - type: software
     title: "thomson-n7-lean"
     authors:
