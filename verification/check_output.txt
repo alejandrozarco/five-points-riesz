@@ -1,0 +1,13 @@
+Run: 2026-10-03T18:22Z, macOS arm64, Python 3.9.6, sympy 1.14.0, python-flint 0.6.0
+Command: python3 check/check_n5_s2.py certificate/cert_n5_s2.json
+sha256: certificate/cert_n5_s2.json: OK
+
+(B) all 4 F' and 8 B' blocks positive definite (19s)
+(A) identity holds exactly in Q[u,v,t] (21s)
+(C) 1-(2-2x)H(x) = (x+1)(2x+1)^2 x^2 q(x), q > 0 on [-1,1] (deg q = 6)
+(D) PSD rank<=3 Gram matrices with entries in {-1,-1/2,0}: 25; with energy <= 17/4: 10
+    all 10 minimisers are the TBP Gram matrix up to relabelling (69s)
+CERTIFICATE VERIFIED
+real 69.08
+user 66.04
+sys 0.88

@@ -1,0 +1,47 @@
+{
+  "title": "Five points on the sphere, Riesz s = 2: one exact three-point certificate",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "alejandrozarco"
+    }
+  ],
+  "license": "Apache-2.0",
+  "description": "<p>An AI-produced warrant (a computer-checked certificate that no human has digested). An exact rational three-point semidefinite-programming certificate, with an independent exact checker, that the triangular bipyramid uniquely minimises the Riesz s = 2 energy of five distinct points on the unit sphere. The theorem is known (R. E. Schwartz, Exp. Math. 2013, and later work); what is offered is the form of the certificate: a single sharp three-point certificate for the lower bound, without case analysis or interval arithmetic; uniqueness uses a finite Gram-matrix enumeration. Not peer reviewed.</p>",
+  "keywords": [
+    "Riesz energy",
+    "Thomson problem",
+    "triangular bipyramid",
+    "semidefinite programming",
+    "three-point bound",
+    "computer-checked certificate"
+  ],
+  "notes": "Not peer reviewed. Produced by AI models (Claude Opus 5.5; review by gpt-6-astra) under the direction of the repository owner; see AI_DISCLOSURE.md.",
+  "related_identifiers": [
+    {
+      "identifier": "arXiv:2301.05090",
+      "relation": "references",
+      "resource_type": "publication-preprint"
+    },
+    {
+      "identifier": "arXiv:1610.04905",
+      "relation": "references",
+      "resource_type": "publication-article"
+    },
+    {
+      "identifier": "arXiv:1103.0485",
+      "relation": "references",
+      "resource_type": "publication-article"
+    },
+    {
+      "identifier": "https://github.com/huwngtran/thomson-n7-lean",
+      "relation": "references",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/alejandrozarco/thomson-n7-log",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

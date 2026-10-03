@@ -1,0 +1,63 @@
+cff-version: 1.2.0
+message: "If you use this material, please cite it as below. Not peer reviewed. Produced by AI models under the direction of the repository owner (see AI_DISCLOSURE.md)."
+title: "Five points on the sphere, Riesz s = 2: one exact three-point certificate"
+type: software
+authors:
+  - name: alejandrozarco
+repository-code: "https://github.com/alejandrozarco/five-points-riesz2"
+abstract: >-
+  An exact rational three-point semidefinite-programming certificate, with an independent exact checker, that the
+  triangular bipyramid uniquely minimises the Riesz s = 2 energy of five distinct points on the unit sphere. The
+  theorem is known (Schwartz); the lower bound is a single sharp three-point certificate without case analysis; uniqueness uses a finite Gram-matrix enumeration. AI-produced;
+  not peer reviewed.
+keywords:
+  - Riesz energy
+  - Thomson problem
+  - triangular bipyramid
+  - semidefinite programming
+  - three-point bound
+  - computer-checked certificate
+license: Apache-2.0
+references:
+  - type: article
+    title: "The five-electron case of Thomson's problem"
+    authors:
+      - {given-names: Richard Evan, family-names: Schwartz}
+    journal: "Experimental Mathematics"
+    volume: 22
+    year: 2013
+  - type: article
+    title: "Moment methods in energy minimization: new bounds for Riesz minimal energy problems"
+    authors:
+      - {given-names: David, family-names: de Laat}
+    journal: "Transactions of the American Mathematical Society"
+    year: 2019
+    identifiers:
+      - {type: url, value: "https://arxiv.org/abs/1610.04905"}
+  - type: article
+    title: "Divide and conquer: a distributed approach to five point energy minimization"
+    authors:
+      - {given-names: Richard Evan, family-names: Schwartz}
+    identifiers:
+      - {type: url, value: "https://arxiv.org/abs/2301.05090"}
+  - type: article
+    title: "Three-point bounds for energy minimization"
+    authors:
+      - {given-names: Henry, family-names: Cohn}
+      - {given-names: Jeechul, family-names: Woo}
+    journal: "Journal of the American Mathematical Society"
+    volume: 25
+    year: 2012
+  - type: article
+    title: "New upper bounds for kissing numbers from semidefinite programming"
+    authors:
+      - {given-names: Christine, family-names: Bachoc}
+      - {given-names: Frank, family-names: Vallentin}
+    journal: "Journal of the American Mathematical Society"
+    volume: 21
+    year: 2008
+  - type: software
+    title: "thomson-n7-lean"
+    authors:
+      - {given-names: Hung, family-names: Tran}
+    repository-code: "https://github.com/huwngtran/thomson-n7-lean"
