@@ -1,5 +1,7 @@
 # Five points on the sphere, Riesz $`s = 2`$: one exact three-point certificate
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23125753.svg)](https://doi.org/10.5281/zenodo.23125753)
+
 Status: **produced by AI models under the direction of the repository owner; not peer reviewed** (see
 [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md)).
 
