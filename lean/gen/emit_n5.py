@@ -891,7 +891,7 @@ def emit(data, rep, src, sha, outdir, FD, SD, SDw, SE, SEw):
                              "(the composition mirrors upstream `Case1.lean`; the piece statistics are named constants "
                              "so that the big literals\nstay out of the elaborated terms).\n\nAttribution: adapted "
                              "from huwngtran/thomson-n7-lean @ 25f2fa5, `ThomsonN7/Solution.lean` (ours ← upstream): "
-                             "`cf_chk` ← `Case1.cf_chk`.") + ns(body)
+                             "`cf_chk` ← `Case1.cf_chk`; the docstring of `idE_stat` ← that of `Case1.c1_idE_stat`.") + ns(body)
     # ---------------- Bound.lean
     Hm = [Fr(x, data["Lam"]) for x in data["h"]]
     def rlit(q):

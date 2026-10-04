@@ -1,0 +1,31 @@
+Version 4 runs on lean/, 2026-10-04 (Linux x86_64): build, Comparator for s = 2 and s = 1, second kernel for s = 2 and
+s = 1. Same tools as the version 3 records (comparator_2026-10-04.txt, second_kernel_2026-10-04.txt):
+leanprover/comparator fd5d5bcf14177b187f66d4502071268d877887c3 (own toolchain leanprover/lean4:v4.35.0-rc3),
+leanprover/lean4export 076e8e57707e813375e8f9da8bf989799ace9680, ammkrn/nanoda_lib 3a2407216ee84a75f9e1aead6803d0578be06ae7.
+Sandbox: as in version 3, landrun was not installed and Comparator used its non-sandboxing shim.
+
+Sources: the 74 stored files of lean/ were byte-identical (sha256) to lean/ as published with this record, except for
+two edits made after these runs (from the AI review): a comment in ThomsonGen/Cert/Cert3K.lean (lines 6-7), and the
+negative-control test in scripts/second-kernel.sh, which now requires nanoda's type-checker error (the two controls
+below show that error). The regenerated modules matched lean/ThomsonGen/scripts/generated.sha256.
+
+Build: all 65 modules of the closure of N5R2.Challenge, N5R2.Check.Axioms, N5R1.Challenge, N5R1.Check.Axioms
+(build_v4_2026-10-04.tsv) with `lake build +<Module>`, one at a time in dependency order, all with exit code 0 (71 min
+in total; largest peak resident memory 8.2 GB); `lake build --no-build` then reported "All targets up-to-date".
+
+Comparator (scripts/run_comparator.sh <config>):
+  s = 2  comparator.json     FivePointsRiesz2.five_riesz2(_unique)    "Your solution is okay!"  exit 0  12 min, 6.6 GB
+                             (comparator_s2_v4_2026-10-04.log)
+  s = 1  comparator_s1.json  FivePointsCoulomb.five_coulomb(_unique)  "Your solution is okay!"  exit 0  30 min, 6.7 GB
+                             (comparator_s1_v4_2026-10-04.log)
+  Permitted axioms in both configs: propext, Quot.sound, Classical.choice.
+
+Second kernel (TARGET=s2|s1 bash scripts/second-kernel.sh):
+  s = 2  export of N5R2.Solution, 4,730,558 lines, sha256 396a13dec841982adaeaf9cba7315abd63be2789a9a119a06e621f560eb3d13d
+         (identical to the version 3 export); nanoda: "Checked 41928 declarations with no errors"; negative control
+         (literal 10279028337839033858341133628 → …630) rejected in the type checker (src/tc.rs); 10 min, 6.6 GB.
+  s = 1  export of N5R1.Solution, 5,980,933 lines, sha256 e0d33b20170cca6f8f73bf440c0f53ad7208de0bfb162aa1c24cc68c9b01682f;
+         nanoda printed FivePointsCoulomb.five_coulomb and five_coulomb_unique with the axioms propext, Quot.sound,
+         Classical.choice and "Checked 44165 declarations with no errors"; negative control (literal
+         4520899263300623297727283068 → …070) rejected in the type checker (src/tc.rs); 26 min, 6.6 GB.
+  Logs: second_kernel_s2_v4_2026-10-04.log, second_kernel_s1_v4_2026-10-04.log.

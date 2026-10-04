@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Second-kernel check: export the two theorems of N5R2/Solution.lean with lean4export and check the export with nanoda
+# Second-kernel check: export the two theorems of N5R2/Solution.lean (TARGET=s2, default) or N5R1/Solution.lean (TARGET=s1)
+# with lean4export and check the export with nanoda
 # (an independent implementation of the Lean 4 type checker, in Rust). Negative control: a copy of the export with one
 # large natural-number literal changed by +1 must be rejected.
 # Needs a built workspace (lake build), git, cargo, network for the first clone. Output: logs/second-kernel/.
@@ -9,8 +10,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"; cd "$ROOT"
 source scripts/tools.sh
 need_lean4export; need_nanoda
 W="$ROOT/logs/second-kernel"; mkdir -p "$W"
-THMS="FivePointsRiesz2.five_riesz2 FivePointsRiesz2.five_riesz2_unique"
-EXP="$W/five_riesz2.ndjson"
+case "${TARGET:-s2}" in
+  s2) MOD=N5R2.Solution; NS=FivePointsRiesz2; T1=five_riesz2; NAME=five_riesz2;;
+  s1) MOD=N5R1.Solution; NS=FivePointsCoulomb; T1=five_coulomb; NAME=five_coulomb; W="$W/s1"; mkdir -p "$W";;
+  *) echo "TARGET must be s2 or s1"; exit 1;;
+esac
+THMS="$NS.$T1 $NS.${T1}_unique"
+EXP="$W/$NAME.ndjson"
 cfg() {  # $1 = export path, $2 = pp_declars, $3 = print_axioms
   cat <<JSON
 { "export_file_path": "$1", "use_stdin": false,
@@ -20,9 +26,9 @@ cfg() {  # $1 = export path, $2 = pp_declars, $3 = print_axioms
 JSON
 }
 if [ "${CONTROL_ONLY:-0}" != 1 ]; then
-lake env "$LEAN4EXPORT" N5R2.Solution -- $THMS > "$EXP"
+lake env "$LEAN4EXPORT" "$MOD" -- $THMS > "$EXP"
 wc -lc "$EXP"; python3 -c 'import hashlib,sys;print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest(), sys.argv[1].split("/")[-1])' "$EXP" | tee "$W/export.sha256"
-cfg "$EXP" '["FivePointsRiesz2.five_riesz2","FivePointsRiesz2.five_riesz2_unique"]' true > "$W/config.json"
+cfg "$EXP" "[\"$NS.$T1\",\"$NS.${T1}_unique\"]" true > "$W/config.json"
 printf '\n== nanoda on the export (expected: axioms propext, Quot.sound, Classical.choice; "Checked N declarations with no errors")\n'
 "$NANODA_BIN" "$W/config.json" | tee "$W/nanoda-accept.out"
 fi
@@ -44,15 +50,18 @@ print(lit, new)
 PY
 )
 printf '\n== negative control: literal %s changed to %s\n' "$LIT" "$NEW"
-sed "s/\"natVal\":\"$LIT\"/\"natVal\":\"$NEW\"/" "$EXP" > "$W/five_riesz2.tampered.ndjson"
-cfg "$W/five_riesz2.tampered.ndjson" '[]' false > "$W/config.tampered.json"
+sed "s/\"natVal\":\"$LIT\"/\"natVal\":\"$NEW\"/" "$EXP" > "$W/$NAME.tampered.ndjson"
+cfg "$W/$NAME.tampered.ndjson" '[]' false > "$W/config.tampered.json"
 if "$NANODA_BIN" "$W/config.tampered.json" > "$W/nanoda-tampered.out" 2> "$W/nanoda-tampered.err"; then
   echo "NEGATIVE CONTROL FAILED: nanoda accepted the tampered export"; exit 1
 elif grep -q "panicked at src/parser.rs" "$W/nanoda-tampered.err"; then
   # nanoda reports type errors by panicking in the type checker (e.g. assert_def_eq in src/tc.rs); a panic in the
   # parser means the export was rejected before type checking, which does not test the checker.
   echo "NEGATIVE CONTROL INCONCLUSIVE: nanoda's parser rejected the export before type checking"; tail -n 3 "$W/nanoda-tampered.err"; exit 1
-else
+elif grep -q "panicked at src/tc.rs" "$W/nanoda-tampered.err" && grep -q "def_eq" "$W/nanoda-tampered.err"; then
   echo "negative control ok: nanoda rejected the tampered export"; tail -n 3 "$W/nanoda-tampered.err"
+else
+  # any other failure (a crash, resource exhaustion, ...) does not show that the type checker caught the change
+  echo "NEGATIVE CONTROL INCONCLUSIVE: nanoda failed, but not with the expected type-checker error"; tail -n 3 "$W/nanoda-tampered.err"; exit 1
 fi
 printf '\nSECOND KERNEL: OK (export accepted, tampered export rejected)\n'

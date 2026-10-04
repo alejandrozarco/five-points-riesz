@@ -3,7 +3,8 @@
 (huwngtran/thomson-n7-lean @ 25f2fa5, formal/lean/ThomsonN7/Solution.lean).
 
 Usage:  UPSTREAM_SOLUTION=path/to/Solution.lean python3 ThomsonGen/scripts/scan_upstream.py [files...]
-Default files: every stored .lean file (Riesz2/** and the ThomsonGen files re-included in .gitignore).
+Default files: every stored .lean file (N5R1/**, N5R2/**, N5R1Minor/**, N5R2Minor/** and the ThomsonGen files
+re-included in .gitignore).
 Default UPSTREAM_SOLUTION: the checkout made by ./regen.sh.
 
 Declarations (with docstring and attributes) are compared whitespace-normalised with every upstream
@@ -276,7 +277,7 @@ def stored_files():
         l = l.strip()
         if l.startswith('!/'): keep.add(l[2:])
     files = []
-    for d in ('ThomsonGen', 'Riesz2'):
+    for d in ('ThomsonGen', 'N5R1', 'N5R2', 'N5R1Minor', 'N5R2Minor'):
         for dp, _, fs in os.walk(os.path.join(ROOT, d)):
             for fn in fs:
                 p = os.path.relpath(os.path.join(dp, fn), ROOT)

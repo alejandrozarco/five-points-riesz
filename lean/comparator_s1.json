@@ -1,0 +1,13 @@
+{
+  "challenge_module": "N5R1.Challenge",
+  "solution_module": "N5R1.Solution",
+  "theorem_names": [
+    "FivePointsCoulomb.five_coulomb",
+    "FivePointsCoulomb.five_coulomb_unique"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

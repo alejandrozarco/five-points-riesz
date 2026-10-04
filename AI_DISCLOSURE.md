@@ -2,7 +2,7 @@
 
 - **Who did the work.** AI models produced the content of this repository under the direction of the repository
   owner (alejandrozarco). Claude Opus 5.5 (Anthropic) generated the new code and adapted the attributed upstream
-  code, including the Lean development; it ran the computations, produced the certificates (`cert_n5_s1.json` to `cert_n5_s6.json`, `cert_n5_s2_short.json`) and
+  code, including the Lean development; it ran the computations, produced the certificates (`cert_n5_s1.json` to `cert_n5_s6.json`, `cert_n5_s1_short.json`, `cert_n5_s2_short.json`) and
   wrote the text. Separate, read-only AI reviewers checked the package
   before each release (see below).
 - **The owner's role.** The owner chose the question, after a public question on the Lean Zulip about whether the new
@@ -17,9 +17,10 @@
     - H > 0 and 1 − (2−2t)^s H² = (t+1)(2t+1)²t² q with q > 0, by exact Bernstein coefficients;
     - an exact sign test in K;
     - the uniqueness energies compared in K.
-  - For s = 2, the Lean development in `lean/` checks the whole statement (bound, minorant, minimality and
-    uniqueness) in the Lean kernel; Comparator compares its statement with `lean/N5R2/Challenge.lean`, and nanoda, an
-    independent type checker, rechecks an export of it (records in `verification/lean/`). What is trusted there is
+  - For s = 1 and s = 2, the Lean development in `lean/` checks the whole statement (bound, minorant, minimality and
+    uniqueness) in the Lean kernel; Comparator compares its statements with `lean/N5R1/Challenge.lean` and
+    `lean/N5R2/Challenge.lean`, and nanoda, an independent type checker, rechecks exports of them (records in
+    `verification/lean/`). What is trusted there is
     the Lean kernel (or nanoda), the statement in `Challenge.lean`, and the definitions it imports from the
     regenerated upstream preamble.
   - Trusted beyond the Python checkers:
@@ -28,9 +29,10 @@
       inequalities) and in the docstring of `check_n5_odd.py` (the sign test, the box/convexity and Bernstein
       arguments).
 
-    These arguments are written out but not formalised. For s = 2, Lean formalises the complete minimality and
-    uniqueness argument, using rational certificate checks, a Bernstein minorant proof, and geometric uniqueness. The
-    odd-s field and box-corner checks are not formalised.
+    These arguments are written out but not formalised in Python. For s = 1 and s = 2, Lean formalises the complete
+    minimality and uniqueness argument: rational certificate checks (for s = 1 per component of Q(√2, √3), with
+    positivity from rational checks at the corners of a box around (√2, √3)), a Bernstein minorant lemma, and
+    geometric uniqueness. For s = 3, 4, 5, 6 only the Python checkers apply.
   - The floating-point sharpness scan (`scan/`) is not checked by anything; it is reported as an observation.
 - **AI reviews.**
   - **Version 1** (s = 2 only), reviewed by gpt-6-astra (OpenAI), 2026-10-03. The review found the mathematics in
@@ -56,7 +58,7 @@
     - construction transcripts were to be archived.
   - **Version 3** (s = 3, 4, 5, 6; checkers generalised to even and odd s; Lean formalisation for s = 2; sharpness
     scan), reviewed by Claude Fable 5.1 and by gpt-6-astra, independently, 2026-10-04. Neither found a soundness defect
-    in the checkers, the README argument, or the Lean statement and proof; both reran checkers (Fable: s = 3, 4 and
+    in the checkers, the README argument, or the Lean statement and formalisation; both reran checkers (Fable: s = 3, 4 and
     the short s = 2 certificate, plus its own negative tests; Astra: s = 5), and Astra independently rechecked the
     touching values of all six certificates. Findings, all addressed before publication:
     - the short s = 2 certificate used by the Lean development was excluded by `.gitignore`;
@@ -69,4 +71,19 @@
       no upstream code was included; stale paths in generated file headers; the package name in the lake manifest;
     - wording: the scope of the Lean formalisation, the licence scope for adapted upstream material, the role of
       the AI model in adapting code, and the manifest.
+  - **Version 4** (Lean formalisation of the Coulomb case s = 1), reviewed by Claude Fable 5.1 and by gpt-6-astra,
+    independently, 2026-10-04. Both reviewed the sources and data; neither found a soundness defect. Both checked the
+    statement in `lean/N5R1/Challenge.lean` against upstream's `coulombEnergy` and `SphereConfig`, the link in Lean
+    between the corner matrices and the component matrices, the vanishing √6 components of the certificate, the box
+    bounds, the minorant and the uniqueness argument (Astra rechecked all 27 equator cases and the factorisation
+    identities independently); both reran `check_n5_odd.py` on `cert_n5_s1_short.json` (verified) and the emitter's
+    check, and Fable regenerated the Lean data byte for byte and compiled `Main.lean` and the axiom check. The Lean
+    build, Comparator and nanoda runs were done separately (`verification/lean/record_v4_2026-10-04.txt`); the reviewers
+    assessed their records. Findings, all addressed before publication:
+    - the short s = 1 certificate used by the Lean development was excluded by `.gitignore` (Fable);
+    - the attribution scanner did not scan the N5R1/N5R2 directories by default; MANIFEST; a stale cross-check in
+      `gen_minor_s1.py`; README credit details (Fable);
+    - the nanoda negative control accepted any failure as a rejection; it now requires the type checker's error (the
+      archived controls show that error); licence scope stated in CITATION.cff and .zenodo.json; this entry; a comment
+      in `Cert3K.lean` (Astra).
 - **Status.** AI reviews are not peer review. No human expert has checked this work.

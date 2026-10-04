@@ -1,38 +1,38 @@
-import N5R2.Bound
-import N5R2Minor.Minor
+import N5R1.Bound
+import N5R1Minor.Minor
 import ThomsonGen.GV
 
 /-! Attribution: adapted from huwngtran/thomson-n7-lean @ 25f2fa5, `ThomsonN7/Solution.lean` (ours ← upstream):
-`riesz2Energy` ← `coulombEnergy`; the final step of `five_riesz2_unique` (obtaining the isometry from the Gram match)
-← `Glue.seven_unique`; the description of the statement below ← the docstring of `thomson_seven_unique`. -/
+the final step of `five_coulomb_unique` (obtaining the isometry from the Gram match) ← `Glue.seven_unique`; the
+description of the statement below ← the docstring of `thomson_seven_unique`. `coulombEnergy` is upstream's own
+definition (regenerated preamble). -/
 
 /-!
-# N = 5, Riesz s = 2: the triangular bipyramid is the unique minimiser
+# N = 5, Coulomb (s = 1): the triangular bipyramid is the unique minimiser
 
 Among all configurations of 5 pairwise distinct unit vectors in `ℝ³`, the triangular bipyramid minimises the
-Riesz `s = 2` energy `∑_{i<j} ‖x i − x j‖⁻²` (minimum `17/4`), uniquely up to an orthogonal map of `ℝ³` and a
-relabelling of the points.
+Coulomb energy `∑_{i<j} ‖x i − x j‖⁻¹` (upstream `ThomsonN7.coulombEnergy`; minimum `1/2 + 3√2 + √3`), uniquely up to
+an orthogonal map of `ℝ³` and a relabelling of the points.
 
-* Minimality (`five_riesz2`): for unit vectors with `t = ⟪x i, x j⟫ < 1`, `‖x i − x j‖⁻² = 1/(2 − 2t) ≥ H(t)`
-  (`H_le`), and `∑_{i<j} H(t_ij) ≥ 17/4` is the three-point bound `bound`.
-* Uniqueness (`five_riesz2_unique`): at equality every `t_ij` is an equality point of `H ≤ φ₂`, so
-  `t_ij ∈ {-1, -1/2, 0}` (`H_eq_iff`).  Some pair is antipodal (otherwise `∑ t_ij = -9/4 ∉ ½ℤ`); after relabelling
-  it is `(0, 1)`.  Then `t_0r = t_1r = 0` for `r ≥ 2`, the energy forces `t_23 + …` to give `φ₂`-sum `1`, and with
-  `‖x 2 + x 3 + x 4‖² ≥ 0` this leaves `t_23 = t_24 = t_34 = -1/2`.  The Gram matrices of `(x 0, x 2, x 3)` and of
-  the bipyramid's `(0, 2, 3)` agree, which gives the isometry (`isometry_of_gram_fin3`); `x 1 = -x 0` and
-  `x 4 = -x 2 - x 3` follow by linearity.
+* Minimality (`five_coulomb`): for unit vectors with `t = ⟪x i, x j⟫ < 1`, `‖x i − x j‖⁻¹ = 1/√(2 − 2t) ≥ H(t)`
+  (`H_le`), and `∑_{i<j} H(t_ij) ≥ 1/2 + 3√2 + √3` is the three-point bound `bound`.
+* Uniqueness (`five_coulomb_unique`): at equality every `t_ij` is an equality point of `H ≤ φ₁`, so
+  `t_ij ∈ {-1, -1/2, 0}` (`H_eq_iff`), where `φ₁ = 1/2, √3/3, √2/2`.  Some pair is antipodal: otherwise
+  `φ₁(t) = √2/2 + t (√2 − 2√3/3)` at every pair, and with `∑ t_ij = N/2`, `N ∈ ℤ`, the energy forces
+  `-5 < N < -4`.  After relabelling the antipodal pair is `(0, 1)`.  Then `t_0r = t_1r = 0` for `r ≥ 2`, the energy
+  forces the `φ₁`-sum of the three equatorial pairs to be `√3`, which (rational bounds on `√2, √3`) leaves
+  `t_23 = t_24 = t_34 = -1/2`.  The Gram matrices of `(x 0, x 2, x 3)` and of the bipyramid's `(0, 2, 3)` agree, which
+  gives the isometry (`isometry_of_gram_fin3`); `x 1 = -x 0` and `x 4 = -x 2 - x 3` follow by linearity.
+
+The combinatorial part follows `N5R2/Main.lean` (the `s = 2` case).
 -/
 
 open Real
 
-namespace N5R2
+namespace N5R1
 
 open ThomsonN7 ThomsonN7.Base ThomsonN7.GV
 open scoped RealInnerProductSpace
-
-/-- Riesz `s = 2` energy `∑_{i<j} ‖x i - x j‖⁻²`. -/
-noncomputable def riesz2Energy {n : ℕ} (x : Fin n → R3) : ℝ :=
-  ∑ i : Fin n, ∑ j ∈ Finset.Ioi i, (‖x i - x j‖ ^ 2)⁻¹
 
 /-- The triangular bipyramid: poles `0, 1`, equatorial triangle `2, 3, 4`. -/
 noncomputable def triBipyramid : Fin 5 → R3 :=
@@ -59,9 +59,9 @@ theorem sum_sq_symm (F : Fin 5 → Fin 5 → ℝ) (hF : ∀ i j, F i j = F j i) 
   linarith [hF 1 0, hF 2 0, hF 3 0, hF 4 0, hF 2 1, hF 3 1, hF 4 1, hF 3 2, hF 4 2, hF 4 3]
 
 /-- The energy is invariant under relabelling. -/
-theorem riesz2Energy_comp (x : Fin 5 → R3) (τ : Equiv.Perm (Fin 5)) :
-    riesz2Energy (x ∘ τ) = riesz2Energy x := by
-  set F : Fin 5 → Fin 5 → ℝ := fun a b => (‖x a - x b‖ ^ 2)⁻¹ with hFdef
+theorem coulombEnergy_comp (x : Fin 5 → R3) (τ : Equiv.Perm (Fin 5)) :
+    coulombEnergy (x ∘ τ) = coulombEnergy x := by
+  set F : Fin 5 → Fin 5 → ℝ := fun a b => ‖x a - x b‖⁻¹ with hFdef
   have hF : ∀ a b, F a b = F b a := fun a b => by simp only [hFdef, norm_sub_rev]
   have hd : ∀ a, F a a = 0 := fun a => by simp [hFdef]
   have e1 := sum_sq_symm F hF
@@ -73,6 +73,28 @@ theorem riesz2Energy_comp (x : Fin 5 → R3) (τ : Equiv.Perm (Fin 5)) :
   simp only [hd, Finset.sum_const_zero, zero_add] at e1 e2
   show ∑ a, ∑ b ∈ Finset.Ioi a, F (τ a) (τ b) = ∑ a, ∑ b ∈ Finset.Ioi a, F a b
   linarith
+
+/-! ## The pair potential at the three equality points -/
+
+/-- For unit vectors, `‖a - b‖⁻¹ = 1 / √(2 - 2⟪a, b⟫)`. -/
+theorem inv_norm_sub {a b : R3} (ha : ‖a‖ = 1) (hb : ‖b‖ = 1) :
+    ‖a - b‖⁻¹ = 1 / √(2 - 2 * ⟪a, b⟫) := by
+  rw [← norm_sub_sq_of_unit ha hb, Real.sqrt_sq (norm_nonneg _), one_div]
+
+theorem phi_m1 : 1 / √(2 - 2 * (-1 : ℝ)) = 1 / 2 := by
+  rw [show (2 : ℝ) - 2 * -1 = 2 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)]
+
+theorem phi_mh : 1 / √(2 - 2 * (-1 / 2 : ℝ)) = √3 / 3 := by
+  rw [show (2 : ℝ) - 2 * (-1 / 2) = 3 by norm_num]
+  have h : √3 * √3 = 3 := Real.mul_self_sqrt (by norm_num)
+  have hp : 0 < √3 := Real.sqrt_pos.2 (by norm_num)
+  rw [div_eq_div_iff hp.ne' (by norm_num : (3 : ℝ) ≠ 0), one_mul, h]
+
+theorem phi_0 : 1 / √(2 - 2 * (0 : ℝ)) = √2 / 2 := by
+  rw [show (2 : ℝ) - 2 * 0 = 2 by norm_num]
+  have h : √2 * √2 = 2 := Real.mul_self_sqrt (by norm_num)
+  have hp : 0 < √2 := Real.sqrt_pos.2 (by norm_num)
+  rw [div_eq_div_iff hp.ne' (by norm_num : (2 : ℝ) ≠ 0), one_mul, h]
 
 /-! ## The triangular bipyramid -/
 
@@ -99,16 +121,22 @@ theorem triBipyramid_mem : triBipyramid ∈ SphereConfig 5 := by
   rw [inner_tbp] at h1
   fin_cases i <;> fin_cases j <;> first | rfl | (norm_num [tbpGram] at h1)
 
-/-- For unit vectors, `‖a - b‖⁻² = 1 / (2 - 2⟪a, b⟫)`. -/
-theorem inv_norm_sub_sq {a b : R3} (ha : ‖a‖ = 1) (hb : ‖b‖ = 1) :
-    (‖a - b‖ ^ 2)⁻¹ = 1 / (2 - 2 * ⟪a, b⟫) := by
-  rw [norm_sub_sq_of_unit ha hb, one_div]
-
-theorem riesz2Energy_triBipyramid : riesz2Energy triBipyramid = 17 / 4 := by
-  unfold riesz2Energy
+theorem coulombEnergy_triBipyramid : coulombEnergy triBipyramid = 1 / 2 + 3 * √2 + √3 := by
+  unfold coulombEnergy
   rw [sum_pairs]
-  simp only [inv_norm_sub_sq (norm_tbp _) (norm_tbp _), inner_tbp]
-  norm_num [tbpGram]
+  simp only [inv_norm_sub (norm_tbp _) (norm_tbp _), inner_tbp]
+  have g01 : tbpGram 0 1 = -1 := by simp [tbpGram]
+  have g02 : tbpGram 0 2 = 0 := by simp [tbpGram]
+  have g03 : tbpGram 0 3 = 0 := by simp [tbpGram]
+  have g04 : tbpGram 0 4 = 0 := by simp [tbpGram]
+  have g12 : tbpGram 1 2 = 0 := by simp [tbpGram]
+  have g13 : tbpGram 1 3 = 0 := by simp [tbpGram]
+  have g14 : tbpGram 1 4 = 0 := by simp [tbpGram]
+  have g23 : tbpGram 2 3 = -1 / 2 := by simp [tbpGram]
+  have g24 : tbpGram 2 4 = -1 / 2 := by simp [tbpGram]
+  have g34 : tbpGram 3 4 = -1 / 2 := by simp [tbpGram]
+  rw [g01, g02, g03, g04, g12, g13, g14, g23, g24, g34, phi_m1, phi_0, phi_mh]
+  ring
 
 /-! ## Unit-vector lemmas -/
 
@@ -133,26 +161,28 @@ theorem eq_of_inner_half {a b c : R3} (ha : ‖a‖ = 1) (hb : ‖b‖ = 1) (hc 
 
 /-! ## Minimality -/
 
-theorem Hpoly_eq_Hn (t : ℝ) : Hpoly t = Hn t := by unfold Hpoly Hn; ring
+/-- The minorant of `N5R1.Bound` and that of `N5R1Minor.Minor` are the same polynomial. -/
+theorem Hn_eq_Hm (t : ℝ) : Hn t = Hm t := by
+  unfold Hn Hn0 Hn1 Hn2 Hm Hm0 Hm1 Hm2; ring
 
 section
 variable {x : Fin 5 → R3}
 
 theorem Hn_le_term (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective x) {i j : Fin 5} (h : i ≠ j) :
-    Hn ⟪x i, x j⟫ ≤ (‖x i - x j‖ ^ 2)⁻¹ := by
-  rw [inv_norm_sub_sq (hx i) (hx j), ← Hpoly_eq_Hn]
+    Hn ⟪x i, x j⟫ ≤ ‖x i - x j‖⁻¹ := by
+  rw [inv_norm_sub (hx i) (hx j), Hn_eq_Hm]
   exact H_le (neg_one_le_inner_of_unit (hx i) (hx j)) (inner_lt_one_of_ne (hx i) (hx j) (hinj.ne h))
 
-theorem le_riesz2Energy (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective x) :
-    (17 / 4 : ℝ) ≤ riesz2Energy x :=
+theorem le_coulombEnergy (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective x) :
+    (1 / 2 + 3 * √2 + √3 : ℝ) ≤ coulombEnergy x :=
   (bound x hx).trans (Finset.sum_le_sum fun _ _ => Finset.sum_le_sum fun _ hj =>
     Hn_le_term hx hinj (ne_of_lt (Finset.mem_Ioi.1 hj)))
 
 /-! ## Uniqueness -/
 
-/-- At equality every inner product is an equality point of `H ≤ φ₂`. -/
+/-- At equality every inner product is an equality point of `H ≤ φ₁`. -/
 theorem inner_mem_of_energy (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective x)
-    (hE : riesz2Energy x = 17 / 4) {i j : Fin 5} (hij : i ≠ j) :
+    (hE : coulombEnergy x = 1 / 2 + 3 * √2 + √3) {i j : Fin 5} (hij : i ≠ j) :
     ⟪x i, x j⟫ = -1 ∨ ⟪x i, x j⟫ = -1 / 2 ∨ ⟪x i, x j⟫ = 0 := by
   suffices key : ∀ i j : Fin 5, i < j →
       ⟪x i, x j⟫ = -1 ∨ ⟪x i, x j⟫ = -1 / 2 ∨ ⟪x i, x j⟫ = 0 by
@@ -160,11 +190,11 @@ theorem inner_mem_of_energy (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injecti
     · exact key i j h
     · rw [real_inner_comm]; exact key j i h
   intro i j hij
-  set d : Fin 5 → Fin 5 → ℝ := fun a b => (‖x a - x b‖ ^ 2)⁻¹ - Hn ⟪x a, x b⟫ with hd
+  set d : Fin 5 → Fin 5 → ℝ := fun a b => ‖x a - x b‖⁻¹ - Hn ⟪x a, x b⟫ with hd
   have hd0 : ∀ a, ∀ b ∈ Finset.Ioi a, 0 ≤ d a b := fun a b hb =>
     sub_nonneg.2 (Hn_le_term hx hinj (ne_of_lt (Finset.mem_Ioi.1 hb)))
   have hsum : ∑ a, ∑ b ∈ Finset.Ioi a, d a b =
-      riesz2Energy x - ∑ a, ∑ b ∈ Finset.Ioi a, Hn ⟪x a, x b⟫ := by
+      coulombEnergy x - ∑ a, ∑ b ∈ Finset.Ioi a, Hn ⟪x a, x b⟫ := by
     simp only [hd, Finset.sum_sub_distrib]; rfl
   have hle : d i j ≤ ∑ a, ∑ b ∈ Finset.Ioi a, d a b :=
     (Finset.single_le_sum (hd0 i) (Finset.mem_Ioi.2 hij)).trans
@@ -172,27 +202,28 @@ theorem inner_mem_of_energy (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injecti
         (fun a _ => Finset.sum_nonneg (hd0 a)) (Finset.mem_univ i))
   have hb := bound x hx
   have hdij : d i j = 0 := le_antisymm (by linarith) (hd0 i j (Finset.mem_Ioi.2 hij))
-  have heq : Hpoly ⟪x i, x j⟫ = 1 / (2 - 2 * ⟪x i, x j⟫) := by
-    rw [Hpoly_eq_Hn, ← inv_norm_sub_sq (hx i) (hx j)]
+  have heq : Hm ⟪x i, x j⟫ = 1 / √(2 - 2 * ⟪x i, x j⟫) := by
+    rw [← Hn_eq_Hm, ← inv_norm_sub (hx i) (hx j)]
     simp only [hd] at hdij; linarith
   exact (H_eq_iff (neg_one_le_inner_of_unit (hx i) (hx j))
     (inner_lt_one_of_ne (hx i) (hx j) (hinj.ne hij.ne))).1 heq
 
-/-- At equality some pair is antipodal: otherwise `∑_{i<j} t_ij = -9/4`, which is not a multiple of `1/2`. -/
+/-- At equality some pair is antipodal: otherwise `φ₁(t_ij) = √2/2 + t_ij (√2 - 2√3/3)` at every pair, and
+`∑_{i<j} t_ij = N/2` with `N ∈ ℤ` would satisfy `-5 < N < -4`. -/
 theorem exists_antipodal (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective x)
-    (hE : riesz2Energy x = 17 / 4) : ∃ p q : Fin 5, p ≠ q ∧ ⟪x p, x q⟫ = -1 := by
+    (hE : coulombEnergy x = 1 / 2 + 3 * √2 + √3) : ∃ p q : Fin 5, p ≠ q ∧ ⟪x p, x q⟫ = -1 := by
   by_contra hno
   push Not at hno
-  have hT : ∀ i j : Fin 5, i ≠ j → ∃ n : ℤ,
-      ⟪x i, x j⟫ = n / 2 ∧ 1 / (2 - 2 * ⟪x i, x j⟫) = 1 / 2 + ⟪x i, x j⟫ / 3 := by
+  have hT : ∀ i j : Fin 5, i ≠ j → ∃ n : ℤ, ⟪x i, x j⟫ = n / 2 ∧
+      1 / √(2 - 2 * ⟪x i, x j⟫) = √2 / 2 + ⟪x i, x j⟫ * (√2 - 2 * √3 / 3) := by
     intro i j hij
     rcases inner_mem_of_energy hx hinj hE hij with h | h | h
     · exact absurd h (hno i j hij)
-    · exact ⟨-1, by rw [h]; norm_num, by rw [h]; norm_num⟩
-    · exact ⟨0, by rw [h]; norm_num, by rw [h]; norm_num⟩
-  unfold riesz2Energy at hE
+    · exact ⟨-1, by rw [h]; norm_num, by rw [h, phi_mh]; ring⟩
+    · exact ⟨0, by rw [h]; norm_num, by rw [h, phi_0]; ring⟩
+  unfold coulombEnergy at hE
   rw [sum_pairs] at hE
-  simp only [inv_norm_sub_sq (hx _) (hx _)] at hE
+  simp only [inv_norm_sub (hx _) (hx _)] at hE
   obtain ⟨n01, h01, k01⟩ := hT 0 1 (by decide)
   obtain ⟨n02, h02, k02⟩ := hT 0 2 (by decide)
   obtain ⟨n03, h03, k03⟩ := hT 0 3 (by decide)
@@ -203,24 +234,41 @@ theorem exists_antipodal (hx : ∀ i, ‖x i‖ = 1) (hinj : Function.Injective 
   obtain ⟨n23, h23, k23⟩ := hT 2 3 (by decide)
   obtain ⟨n24, h24, k24⟩ := hT 2 4 (by decide)
   obtain ⟨n34, h34, k34⟩ := hT 3 4 (by decide)
-  have hR : ((n01 + n02 + n03 + n04 + n12 + n13 + n14 + n23 + n24 + n34 : ℤ) : ℝ) * 2 = -9 := by
-    push_cast; linarith
-  have hZ : (n01 + n02 + n03 + n04 + n12 + n13 + n14 + n23 + n24 + n34) * 2 = -9 := by
-    exact_mod_cast hR
+  set c : ℝ := √2 - 2 * √3 / 3 with hc
+  have hc0 : 0 < c := by linarith [lo2, hi3, hc]
+  have key : ((n01 + n02 + n03 + n04 + n12 + n13 + n14 + n23 + n24 + n34 : ℤ) : ℝ) * c =
+      1 - 4 * √2 + 2 * √3 := by
+    push_cast
+    linear_combination 2 * hE - 2 * (k01 + k02 + k03 + k04 + k12 + k13 + k14 + k23 + k24 + k34) -
+      2 * c * (h01 + h02 + h03 + h04 + h12 + h13 + h14 + h23 + h24 + h34)
+  set N : ℤ := n01 + n02 + n03 + n04 + n12 + n13 + n14 + n23 + n24 + n34 with hN
+  have a1 : (N : ℝ) < -4 := by
+    by_contra h
+    push Not at h
+    have := mul_le_mul_of_nonneg_right h hc0.le
+    linarith [lo3, hc]
+  have a2 : (-5 : ℝ) < N := by
+    by_contra h
+    push Not at h
+    have := mul_le_mul_of_nonneg_right h hc0.le
+    linarith [lo2, hi3, hc]
+  have b1 : N < -4 := by exact_mod_cast a1
+  have b2 : -5 < N := by exact_mod_cast a2
   omega
 
 end
 
 /-- The three inner products on the equator. -/
 theorem equator_vals {a b c : ℝ} (ha : a = -1 ∨ a = -1 / 2 ∨ a = 0) (hb : b = -1 ∨ b = -1 / 2 ∨ b = 0)
-    (hc : c = -1 ∨ c = -1 / 2 ∨ c = 0) (hE : 1 / (2 - 2 * a) + 1 / (2 - 2 * b) + 1 / (2 - 2 * c) = 1)
-    (hG : 0 ≤ 3 + 2 * (a + b + c)) : a = -1 / 2 ∧ b = -1 / 2 ∧ c = -1 / 2 := by
+    (hc : c = -1 ∨ c = -1 / 2 ∨ c = 0) (hE : 1 / √(2 - 2 * a) + 1 / √(2 - 2 * b) + 1 / √(2 - 2 * c) = √3) :
+    a = -1 / 2 ∧ b = -1 / 2 ∧ c = -1 / 2 := by
   rcases ha with rfl | rfl | rfl <;> rcases hb with rfl | rfl | rfl <;> rcases hc with rfl | rfl | rfl <;>
-    first | (norm_num at hE; done) | (norm_num at hG; done) | norm_num
+    simp only [phi_m1, phi_mh, phi_0] at hE <;>
+    first | (norm_num; done) | (exfalso; linarith [lo2, hi2, lo3, hi3])
 
 /-- Uniqueness when the antipodal pair is `(0, 1)`. -/
 theorem unique_normalized {y : Fin 5 → R3} (hy : ∀ i, ‖y i‖ = 1) (hinj : Function.Injective y)
-    (hE : riesz2Energy y = 17 / 4) (h01 : ⟪y 0, y 1⟫ = -1) :
+    (hE : coulombEnergy y = 1 / 2 + 3 * √2 + √3) (h01 : ⟪y 0, y 1⟫ = -1) :
     ∃ g : R3 ≃ₗᵢ[ℝ] R3, ∀ k, y k = g (triBipyramid k) := by
   have T : ∀ i j : Fin 5, i ≠ j → ⟪y i, y j⟫ = -1 ∨ ⟪y i, y j⟫ = -1 / 2 ∨ ⟪y i, y j⟫ = 0 :=
     fun i j h => inner_mem_of_energy hy hinj hE h
@@ -235,19 +283,13 @@ theorem unique_normalized {y : Fin 5 → R3} (hy : ∀ i, ‖y i‖ = 1) (hinj :
   obtain ⟨z02, z12⟩ := hzero 2 (by decide) (by decide)
   obtain ⟨z03, z13⟩ := hzero 3 (by decide) (by decide)
   obtain ⟨z04, z14⟩ := hzero 4 (by decide) (by decide)
-  have hE' : 1 / (2 - 2 * ⟪y 2, y 3⟫) + 1 / (2 - 2 * ⟪y 2, y 4⟫) + 1 / (2 - 2 * ⟪y 3, y 4⟫) = 1 := by
-    unfold riesz2Energy at hE
+  have hE' : 1 / √(2 - 2 * ⟪y 2, y 3⟫) + 1 / √(2 - 2 * ⟪y 2, y 4⟫) + 1 / √(2 - 2 * ⟪y 3, y 4⟫) = √3 := by
+    unfold coulombEnergy at hE
     rw [sum_pairs] at hE
-    simp only [inv_norm_sub_sq (hy _) (hy _)] at hE
-    rw [h01, z02, z03, z04, z12, z13, z14] at hE
-    norm_num at hE
-    rw [one_div, one_div, one_div]
+    simp only [inv_norm_sub (hy _) (hy _)] at hE
+    rw [h01, z02, z03, z04, z12, z13, z14, phi_m1, phi_0] at hE
     linarith
-  have hG : 0 ≤ 3 + 2 * (⟪y 2, y 3⟫ + ⟪y 2, y 4⟫ + ⟪y 3, y 4⟫) := by
-    have := norm_add3_sq (y 2) (y 3) (y 4)
-    rw [hy, hy, hy] at this
-    nlinarith [sq_nonneg ‖y 2 + y 3 + y 4‖]
-  obtain ⟨t23, t24, t34⟩ := equator_vals (T 2 3 (by decide)) (T 2 4 (by decide)) (T 3 4 (by decide)) hE' hG
+  obtain ⟨t23, t24, t34⟩ := equator_vals (T 2 3 (by decide)) (T 2 4 (by decide)) (T 3 4 (by decide)) hE'
   have hy4 : y 4 = -y 2 - y 3 := eq_of_inner_half (hy 2) (hy 3) (hy 4) t23 t24 t34
   -- the frames `(tbp 0, tbp 2, tbp 3)` and `(y 0, y 2, y 3)`
   set u : Fin 3 → R3 := ![triBipyramid 0, triBipyramid 2, triBipyramid 3] with hu
@@ -282,19 +324,19 @@ theorem unique_normalized {y : Fin 5 → R3} (hy : ∀ i, ‖y i‖ = 1) (hinj :
 
 /-! ## Main theorems -/
 
-/-- **Riesz s = 2, N = 5 (minimality).** Among all configurations of 5 distinct points on the unit sphere, the
-triangular bipyramid minimises `∑_{i<j} ‖x i - x j‖⁻²`; the minimum is `17/4`. -/
-theorem five_riesz2 : ∀ x ∈ SphereConfig 5, riesz2Energy triBipyramid ≤ riesz2Energy x := by
+/-- **Coulomb, N = 5 (minimality).** Among all configurations of 5 distinct points on the unit sphere, the
+triangular bipyramid minimises `∑_{i<j} ‖x i - x j‖⁻¹`; the minimum is `1/2 + 3√2 + √3`. -/
+theorem five_coulomb : ∀ x ∈ SphereConfig 5, coulombEnergy triBipyramid ≤ coulombEnergy x := by
   intro x ⟨hx, hinj⟩
-  rw [riesz2Energy_triBipyramid]
-  exact le_riesz2Energy hx hinj
+  rw [coulombEnergy_triBipyramid]
+  exact le_coulombEnergy hx hinj
 
-/-- **Riesz s = 2, N = 5 (uniqueness).** Every minimiser is the triangular bipyramid up to an orthogonal map of
-`ℝ³` and a relabelling. -/
-theorem five_riesz2_unique : ∀ x ∈ SphereConfig 5, riesz2Energy x = riesz2Energy triBipyramid →
+/-- **Coulomb, N = 5 (uniqueness).** Every minimiser is the triangular bipyramid up to an orthogonal map of `ℝ³`
+and a relabelling. -/
+theorem five_coulomb_unique : ∀ x ∈ SphereConfig 5, coulombEnergy x = coulombEnergy triBipyramid →
     ∃ (g : R3 ≃ₗᵢ[ℝ] R3) (σ : Equiv.Perm (Fin 5)), ∀ i, x i = g (triBipyramid (σ i)) := by
   intro x ⟨hx, hinj⟩ hE
-  rw [riesz2Energy_triBipyramid] at hE
+  rw [coulombEnergy_triBipyramid] at hE
   obtain ⟨p, q, hpq, hpq'⟩ := exists_antipodal hx hinj hE
   -- a relabelling `τ` with `τ 0 = p`, `τ 1 = q`
   set q' := Equiv.swap 0 p q with hq'
@@ -311,11 +353,11 @@ theorem five_riesz2_unique : ∀ x ∈ SphereConfig 5, riesz2Energy x = riesz2En
     rw [hτ, Equiv.Perm.mul_apply, Equiv.swap_apply_left, hq', Equiv.swap_apply_self]
   have hy : ∀ i, ‖(x ∘ τ) i‖ = 1 := fun i => hx _
   have hyinj : Function.Injective (x ∘ τ) := hinj.comp τ.injective
-  have hyE : riesz2Energy (x ∘ τ) = 17 / 4 := by rw [riesz2Energy_comp]; exact hE
+  have hyE : coulombEnergy (x ∘ τ) = 1 / 2 + 3 * √2 + √3 := by rw [coulombEnergy_comp]; exact hE
   have hy01 : ⟪(x ∘ τ) 0, (x ∘ τ) 1⟫ = -1 := by simp only [Function.comp, τ0, τ1]; exact hpq'
   obtain ⟨g, hg⟩ := unique_normalized hy hyinj hyE hy01
   refine ⟨g, τ.symm, fun i => ?_⟩
   rw [← hg]
   simp
 
-end N5R2
+end N5R1

@@ -4,6 +4,7 @@
 /ThomsonGen/**/*.lean
 !/ThomsonGen/Cert/NBlk.lean
 !/ThomsonGen/Cert/Cert3N.lean
+!/ThomsonGen/Cert/Cert3K.lean
 /ThomsonGen/scripts/modules.tsv
 /ThomsonGen/scripts/pruned.tsv
 logs/

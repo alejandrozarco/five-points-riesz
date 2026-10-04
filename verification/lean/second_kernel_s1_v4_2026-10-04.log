@@ -1,0 +1,39 @@
+Build completed successfully (6 jobs).
+    Finished `release` profile [optimized] target(s) in 0.10s
+  5980933 322046404 /mnt/ssd/thomson/pub_n5/logs/second-kernel/s1/five_coulomb.ndjson
+e0d33b20170cca6f8f73bf440c0f53ad7208de0bfb162aa1c24cc68c9b01682f five_coulomb.ndjson
+
+== nanoda on the export (expected: axioms propext, Quot.sound, Classical.choice; "Checked N declarations with no errors")
+theorem FivePointsCoulomb.five_coulomb :
+  forall (x : Fin (OfNat.ofNat 5) → ThomsonN7.R3),
+  Membership.mem (ThomsonN7.SphereConfig (OfNat.ofNat 5)) x → LE.le
+    (ThomsonN7.coulombEnergy FivePointsCoulomb.triBipyramid) (ThomsonN7.coulombEnergy x) :=
+  _
+
+theorem FivePointsCoulomb.five_coulomb_unique :
+  forall (x : Fin (OfNat.ofNat 5) → ThomsonN7.R3),
+  Membership.mem (ThomsonN7.SphereConfig (OfNat.ofNat 5)) x → Eq (ThomsonN7.coulombEnergy x)
+      (ThomsonN7.coulombEnergy FivePointsCoulomb.triBipyramid) →
+  Exists
+    (fun (g : LinearIsometryEquiv (RingHom.id Real) ThomsonN7.R3 ThomsonN7.R3) =>
+    Exists
+      (fun (σ : Equiv.Perm (Fin (OfNat.ofNat 5))) =>
+      forall (i : Fin (OfNat.ofNat 5)),
+      Eq (x i) (DFunLike.coe g (FivePointsCoulomb.triBipyramid (DFunLike.coe σ i))))) :=
+  _
+
+axiom propext {a b : Prop} : Iff a b → Eq a b
+
+axiom Quot.sound.{u} {α : Sort u} {r : α → α → Prop} {a b : α} : r a b → Eq (Quot.mk r a) (Quot.mk r b)
+
+axiom Classical.choice.{u} {α : Sort u} : Nonempty α → α
+
+Checked 44165 declarations with no errors
+
+== negative control: literal 4520899263300623297727283068 changed to 4520899263300623297727283070
+negative control ok: nanoda rejected the tampered export
+thread 'main' (3492912) panicked at src/tc.rs:955:71:
+assertion failed: self.def_eq(u, v)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+SECOND KERNEL: OK (export accepted, tampered export rejected)

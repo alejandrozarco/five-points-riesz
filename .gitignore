@@ -3,3 +3,4 @@ certificate/cert_n5_s*.json
 __pycache__/
 *.pyc
 !certificate/cert_n5_s2_short.json
+!certificate/cert_n5_s1_short.json

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Run leanprover/comparator. It checks three things:
-#   - FivePointsRiesz2.five_riesz2(_unique) in N5R2/Solution.lean have the same statements as the sorry'd ones in
-#     N5R2/Challenge.lean;
+#   - the theorems named in the config (comparator.json: FivePointsRiesz2.five_riesz2(_unique), s = 2;
+#     comparator_s1.json: FivePointsCoulomb.five_coulomb(_unique), s = 1) in the solution module have the same
+#     statements as the sorry'd ones in the challenge module;
 #   - they use only propext, Quot.sound and Classical.choice;
 #   - the Lean kernel accepts them (replayed from a lean4export dump).
 # Needs a built workspace (regen.sh, lake exe cache get, lake build), git, network for the first clone of the tools,
 # and several GB of RAM. Comparator runs the solution under `landrun` (Linux Landlock). If `landrun` is not on PATH,
 # Comparator's own non-sandboxing shim scripts/fake-landrun.sh is used; set COMPARATOR_LANDRUN to use a landrun binary.
 # Adapted from ComparatorChallenges/run_comparator.sh of huwngtran/thomson-n7-lean.
-# Usage: bash scripts/run_comparator.sh        Output: logs/comparator.log
+# Usage: bash scripts/run_comparator.sh [CONFIG]   (default comparator.json)   Output: logs/<CONFIG without .json>.log
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"; cd "$ROOT"
 source scripts/tools.sh
@@ -21,5 +22,6 @@ if [ -z "${COMPARATOR_LANDRUN:-}" ]; then
 fi
 export COMPARATOR_LANDRUN
 mkdir -p logs
-/usr/bin/time -p lake env "$COMPARATOR_BIN" comparator.json 2>&1 | tee logs/comparator.log
+CFG="${1:-comparator.json}"; LOG="logs/$(basename "$CFG" .json).log"
+/usr/bin/time -p lake env "$COMPARATOR_BIN" "$CFG" 2>&1 | tee "$LOG"
 echo "COMPARATOR EXIT: ${PIPESTATUS[0]}"

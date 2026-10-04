@@ -1,5 +1,5 @@
 {
-  "title": "Five points on the sphere: exact three-point certificates for the Riesz energies s = 1, ..., 6, and a Lean formalisation for s = 2",
+  "title": "Five points on the sphere: exact three-point certificates for the Riesz energies s = 1, ..., 6, and Lean formalisations for s = 1 (Coulomb) and s = 2",
   "upload_type": "software",
   "creators": [
     {
@@ -7,7 +7,7 @@
     }
   ],
   "license": "Apache-2.0",
-  "description": "<p>An AI-produced warrant (computer-checked certificates that no human has digested). Exact three-point semidefinite-programming certificates, with independent exact checkers, that the triangular bipyramid uniquely minimises the Riesz s-energy of five distinct points on the unit sphere for s = 1, 2, ..., 6 (s = 1: the five-electron Thomson problem). The theorems are known (R. E. Schwartz, Exp. Math. 2013, and later work); what is offered is the form of the certificates: for each energy a single sharp three-point certificate of degree 10 for the lower bound, without subdivision of the configuration space (rational for even s, over Q(sqrt2, sqrt3) for odd s); uniqueness uses a finite Gram-matrix enumeration. For s = 2 the statement is also formalised in Lean 4. Floating-point runs of the same bound for other s are included. Not peer reviewed.</p>",
+  "description": "<p>An AI-produced warrant (computer-checked certificates that no human has digested). Exact three-point semidefinite-programming certificates, with independent exact checkers, that the triangular bipyramid uniquely minimises the Riesz s-energy of five distinct points on the unit sphere for s = 1, 2, ..., 6 (s = 1: the five-electron Thomson problem). The theorems are known (R. E. Schwartz, Exp. Math. 2013, and later work); what is offered is the form of the certificates: for each energy a single sharp three-point certificate of degree 10 for the lower bound, without subdivision of the configuration space (rational for even s, over Q(sqrt2, sqrt3) for odd s); uniqueness uses a finite Gram-matrix enumeration. For s = 1 (the five-electron Thomson problem) and s = 2 the statement is also formalised in Lean 4, checked with Comparator and the independent type checker nanoda. Floating-point runs of the same bound for other s are included. Not peer reviewed. Apache-2.0 applies only to the authors' original contributions; adapted upstream material is excluded (see README, Licence).</p>",
   "keywords": [
     "Riesz energy",
     "Thomson problem",
@@ -17,7 +17,7 @@
     "computer-checked certificate",
     "Lean 4"
   ],
-  "notes": "Not peer reviewed. Produced by AI models (Claude Opus 5.5; reviews by gpt-6-astra and Claude Fable 5.1) under the direction of the repository owner; see AI_DISCLOSURE.md. Version 1: s = 2. Version 2: adds Coulomb (s = 1). Version 3: adds s = 3, 4, 5, 6, the Lean formalisation for s = 2, and a floating-point sharpness scan.",
+  "notes": "Not peer reviewed. Produced by AI models (Claude Opus 5.5; reviews by gpt-6-astra and Claude Fable 5.1) under the direction of the repository owner; see AI_DISCLOSURE.md. Version 1: s = 2. Version 2: adds Coulomb (s = 1). Version 3: adds s = 3, 4, 5, 6, the Lean formalisation for s = 2, and a floating-point sharpness scan. Version 4: adds the Lean formalisation for the Coulomb case s = 1.",
   "related_identifiers": [
     {
       "identifier": "arXiv:1001.3702",
