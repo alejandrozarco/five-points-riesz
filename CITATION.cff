@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this material, please cite it as below. Not peer reviewed. Produced by AI models under the direction of the repository owner (see AI_DISCLOSURE.md)."
-title: "Five points on the sphere: exact three-point certificates for the Coulomb and Riesz s = 2 energies"
+title: "Five points on the sphere: exact three-point certificates for the Riesz energies s = 1, ..., 6, and a Lean formalisation for s = 2"
 type: software
 doi: "10.5281/zenodo.23125753"
 authors:
@@ -8,10 +8,12 @@ authors:
 repository-code: "https://github.com/alejandrozarco/five-points-riesz"
 abstract: >-
   Exact three-point semidefinite-programming certificates, with independent exact checkers, that the triangular
-  bipyramid uniquely minimises the Coulomb (s = 1; the five-electron Thomson problem) and the Riesz s = 2 energy of
-  five distinct points on the unit sphere. The theorems are known (Schwartz). Each lower bound is a single sharp
-  three-point certificate without subdivision of the configuration space (rational for s = 2, over Q(sqrt2, sqrt3) for s = 1); uniqueness uses
-  a finite Gram-matrix enumeration. AI-produced; not peer reviewed.
+  bipyramid uniquely minimises the Riesz s-energy of five distinct points on the unit sphere for s = 1, 2, ..., 6
+  (s = 1: the five-electron Thomson problem). The theorems are known (Schwartz). Each lower bound is a single sharp
+  three-point certificate of degree 10 without subdivision of the configuration space (rational for even s, over
+  Q(sqrt2, sqrt3) for odd s); uniqueness uses a finite Gram-matrix enumeration. For s = 2 the statement is also
+  formalised in Lean 4 (checked with Comparator and the independent checker nanoda). Floating-point runs of the
+  same degree-10 bound show growing numerical discrepancies between about s = 7 and s = 10. AI-produced; not peer reviewed.
 keywords:
   - Riesz energy
   - Thomson problem
@@ -19,6 +21,7 @@ keywords:
   - semidefinite programming
   - three-point bound
   - computer-checked certificate
+  - Lean 4
 license: Apache-2.0
 references:
   - type: article

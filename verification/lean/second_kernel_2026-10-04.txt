@@ -1,0 +1,19 @@
+Second-kernel check of lean/, 2026-10-04 (Linux x86_64), with lean/scripts/second-kernel.sh, on the workspace of the
+Comparator run (comparator_2026-10-04.txt).
+
+Tools: leanprover/lean4export 076e8e57707e813375e8f9da8bf989799ace9680 (export format 3.1.0) and ammkrn/nanoda_lib
+3a2407216ee84a75f9e1aead6803d0578be06ae7 (an independent implementation of the Lean 4 type checker, in Rust).
+
+Export: `lean4export N5R2.Solution -- FivePointsRiesz2.five_riesz2 FivePointsRiesz2.five_riesz2_unique`,
+4,730,558 lines, 255 MB, sha256 396a13dec841982adaeaf9cba7315abd63be2789a9a119a06e621f560eb3d13d.
+
+nanoda on the export (permitted axioms propext, Quot.sound, Classical.choice; Nat and String extensions on): it printed
+both statements (FivePointsRiesz2.five_riesz2, FivePointsRiesz2.five_riesz2_unique, as in N5R2/Challenge.lean), the
+axioms propext, Quot.sound, Classical.choice, and "Checked 41928 declarations with no errors".
+
+Negative control: the natural-number literal 10279028337839033858341133628 (it occurs once in the export) changed to
+10279028337839033858341133630 (a value that does not occur in the export). nanoda rejected the tampered export in its
+type checker ("assertion failed: self.def_eq(u, v)", src/tc.rs), not in its parser.
+
+Result: "SECOND KERNEL: OK (export accepted, tampered export rejected)". 10 min wall time, peak resident memory 6.6 GB.
+Log: second_kernel_2026-10-04.log.

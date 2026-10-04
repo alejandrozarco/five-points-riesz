@@ -1,0 +1,22 @@
+Construction rerun (s = 6): 2026-10-04T04:51Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
+Command (in a copy of construction/): RIESZ_S=6 POLYD=10 python3 1_build_sdp.py 4 && python3 2_project_exact.py && python3 3_check_and_write.py
+reduced F sizes [4, 5, 3, 2] SOS sizes [49, 29, 29, 29, 28, 28, 28, 17] (0.2s)
+float SDP: optimal_inaccurate  e - E_TBP = 2.053452030637004e-07 (29.4s)
+unknowns: 3946
+F columns built (29.6s)
+SOS columns built (29.9s)
+float residual max 3.172192703265396e-07 (58.1s)
+saved stage.pkl
+rank 272 (0.4s)
+S = 3456
+max |r| (scaled back): 3.172202758250364e-07 (0.7s)
+Gram built (0.9s)
+solved (1.0s)
+rows violated: 0  max|corr| = 1.1029807321156418e-08 (11.0s)
+positive definite (exact Sylvester): {'F0': True, 'F1': True, 'F2': True, 'F3': True, 'B0': True, 'B1': True, 'B2': True, 'B3': True, 'B4': True, 'B5': True, 'B6': True, 'B7': True} (23.4s)
+remainder zero: True  quotient deg 8  roots of quotient in [-1,1]: 0  q(0) = 0.7065836543709472  min q on grid = 0.05555555555555555
+wrote cert_n5_s6.json 11185 KB (23.9s)
+
+Output sha256 vs. published certificate:
+693e96767f43a9d7a64e05984df60ea289ea56b34f44585e4dd7af49795a0855  regenerated cert_n5_s6.json
+IDENTICAL (byte for byte)

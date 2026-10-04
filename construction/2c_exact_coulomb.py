@@ -1,4 +1,5 @@
-"""Stage 2 of 2 for N = 5, Coulomb (s = 1): exact projection over K = Q(sqrt2, sqrt3), exact checks, certificate JSON.
+"""Stage 2 of 2 for N = 5, odd s (RIESZ_S, default 1 = Coulomb): exact projection over K = Q(sqrt2, sqrt3), exact
+checks, certificate JSON cert_n5_s<s>.json. Reads stage_s<s>.pkl.
 
 Unknowns x in K^m are split into rational components x = x0 + x1 sqrt2 + x2 sqrt3 + x3 sqrt6. The constraint matrix
 A is rational, so A x = b (b in K) splits into A x_i = b_i. Projection: least-norm correction of the rounded float
@@ -6,7 +7,7 @@ solution in each component; the real value of the total correction is tiny altho
 Checks:
   - every reduced Gram matrix is positive definite: it is affine in (sqrt2, sqrt3, sqrt6), so positive definiteness at
     the 8 corners of a tiny rational box around (sqrt2, sqrt3, sqrt6) implies it at the true point (convexity);
-  - H <= phi = (2-2t)^(-1/2) on [-1,1): p = 1 - (2-2t) H^2 = (t+1)(2t+1)^2 t^2 q with q > 0 on [-1,1], shown by exact
+  - H <= phi = (2-2t)^(-s/2) on [-1,1): p = 1 - (2-2t)^s H^2 = (t+1)(2t+1)^2 t^2 q with q > 0 on [-1,1], shown by exact
     Bernstein coefficients (with exact subdivision) and exact signs in K; and H > 0 on [-1,1] the same way;
   - uniqueness enumeration with exact energies in K.
 """
@@ -15,11 +16,14 @@ from fractions import Fraction as Fr
 import sympy as sy
 from flint import fmpq_mat, fmpq, fmpz_mat
 from kfield import k, add, sub, mul, scale, sign, to_float, sqrt_bounds, ZERO
+import os
+RS = int(os.environ.get("RIESZ_S", "1")); assert RS >= 1 and RS % 2 == 1, "odd s only"
+MS = RS // 2                                   # s = 2 MS + 1
 
 t0 = time.time()
-d = pickle.load(open('stage_s1.pkl', 'rb'))
+d = pickle.load(open(f'stage_s{RS}.pkl', 'rb'))
 A, bK, x0, nrow, ncol, cols = d['A'], d['bK'], d['x0'], d['nrow'], d['ncol'], d['cols']
-D = 10
+D = d.get('D', 10)
 Am = fmpq_mat(nrow, ncol)
 for i in range(nrow):
     for c, v in A[i].items(): Am[i, c] = fmpq(v.numerator, v.denominator)
@@ -111,7 +115,9 @@ def pmulK(p, q):
         for j, y in enumerate(q): r[i + j] = add(r[i + j], mul(x, y))
     return r
 H2 = pmulK(H, H)
-p = pmulK([k(2), k(-2)], H2); p = [scale(c, -1) for c in p]; p[0] = add(p[0], k(1))     # 1 - (2-2t) H^2
+p = H2
+for _ in range(RS): p = pmulK([k(2), k(-2)], p)
+p = [scale(c, -1) for c in p]; p[0] = add(p[0], k(1))                                     # 1 - (2-2t)^s H^2
 def divK(num, den):   # den rational coefficients (monomial, low->high)
     num = list(num); out = [ZERO] * (len(num) - len(den) + 1)
     for i in range(len(out) - 1, -1, -1):
@@ -149,7 +155,7 @@ for combo in itertools.product(vals, repeat=10):
     if G.rank() > 3 or any(ev < 0 for ev in G.eigenvals(multiple=True)): continue
     feas += 1
     a_, b_, c_ = combo.count(Fr(-1)), combo.count(Fr(-1, 2)), combo.count(Fr(0))
-    diff = k(Fr(a_ - 1, 2), Fr(c_ - 6, 2), Fr(b_ - 3, 3), 0)   # E - E(TBP) = (a-1)/2 + (c-6)/sqrt2 + (b-3)/sqrt3
+    diff = k(Fr(a_ - 1, 2 ** RS), Fr(c_ - 6, 2 ** (MS + 1)), Fr(b_ - 3, 3 ** (MS + 1)), 0)   # E - E(TBP); s = 1: (a-1)/2 + (c-6)/sqrt2 + (b-3)/sqrt3
     sgn = sign(diff)
     assert sgn >= 0, "a configuration below E(TBP)?!"
     if sgn == 0: low.append(combo)
@@ -161,14 +167,21 @@ for combo in low:
 print(f"uniqueness: {feas} feasible Gram matrices, energy E(TBP) only for the {len(low)} TBP labellings ({time.time()-t0:.1f}s)", flush=True)
 
 def ks(z): return [f"{c.numerator}/{c.denominator}" if c.denominator != 1 else str(c.numerator) for c in z]
+E_TBP_K = (Fr(1, 2 ** RS), Fr(6, 2 ** (MS + 1)), Fr(3, 3 ** (MS + 1)), Fr(0))
+if RS == 1:
+    head, etxt = "Coulomb (s = 1, phi(t) = (2-2t)^(-1/2))", "1/2 + 3 sqrt2 + sqrt3"
+else:
+    head = f"Riesz s = {RS} (phi(t) = (2-2t)^(-{RS}/2))"
+    etxt = f"{E_TBP_K[0]} + {E_TBP_K[1]} sqrt2 + {E_TBP_K[2]} sqrt3"
 cert = dict(
-    description=("N = 5 points on S^2, Coulomb (s = 1, phi(t) = (2-2t)^(-1/2)): exact three-point certificate over "
+    description=(f"N = 5 points on S^2, {head}: exact three-point certificate over "
                  "K = Q(sqrt2, sqrt3); every number is [a, b, c, d] = a + b sqrt2 + c sqrt3 + d sqrt6. Same identity as the "
-                 "s = 2 certificate with e = E(TBP) = 1/2 + 3 sqrt2 + sqrt3. AI-produced, not peer reviewed."),
-    D=D, n=5, e=ks(k(Fr(1, 2), 3, 1, 0)), H_chebyshev=[ks(xK[j]) for j in range(D + 1)],
+                 f"s = 2 certificate with e = E(TBP) = {etxt}. AI-produced, not peer reviewed."),
+    D=D, n=5, e=ks(k(*E_TBP_K)), H_chebyshev=[ks(xK[j]) for j in range(D + 1)],
     F_reducers=d['Fred'], F_reduced=[[[ks(z) for z in row] for row in mats[f"F{b_}"]] for b_ in Fb],
-    sos_g=["1", "1+u", "1+v", "1+t", "1-u", "1-v", "1-t", "detG=1+2uvt-u^2-v^2-t^2"], sos_degrees=[5, 4, 4, 4, 4, 4, 4, 3],
+    sos_g=["1", "1+u", "1+v", "1+t", "1-u", "1-v", "1-t", "detG=1+2uvt-u^2-v^2-t^2"], sos_degrees=[D // 2] + [D // 2 - 1] * 6 + [D // 2 - 2],
     sos_monomials="all (a,b,c) with a+b+c <= d, in itertools.product order",
     sos_reducers=d['SRED'], sos_reduced=[[[ks(z) for z in row] for row in mats[f"B{b_}"]] for b_ in Bb])
-json.dump(cert, open('cert_n5_s1.json', 'w'))
-import os; print("wrote cert_n5_s1.json", os.path.getsize('cert_n5_s1.json') // 1024, "KB", f"({time.time()-t0:.1f}s)")
+out = f'cert_n5_s{RS}.json'
+json.dump(cert, open(out, 'w'))
+print("wrote", out, os.path.getsize(out) // 1024, "KB", f"({time.time()-t0:.1f}s)")

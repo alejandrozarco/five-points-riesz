@@ -1,0 +1,14 @@
+Run: 2026-10-04T05:10Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
+Command: python3 check/check_n5_even.py certificate/cert_n5_s6.json 6
+sha256: certificate/cert_n5_s6.json: OK
+
+s = 6, D = 10, e = 505/576 = E_s(TBP)
+(B) all 4 F' and 8 B' blocks positive definite (24s)
+(A) identity holds exactly in Q[u,v,t] (27s)
+(C) 1-(2-2x)^3 H(x) = (x+1)(2x+1)^2 x^2 q(x), q > 0 on [-1,1] (deg q = 8)
+(D) PSD rank<=3 Gram matrices with entries in {-1,-1/2,0}: 25; with energy <= E_s(TBP): 10
+    all 10 minimisers are the TBP Gram matrix up to relabelling (84s)
+CERTIFICATE VERIFIED
+real 84.92
+user 81.98
+sys 1.13

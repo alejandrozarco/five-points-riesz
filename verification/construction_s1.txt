@@ -1,14 +1,14 @@
-Construction rerun (s1): 2026-10-03T20:52Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
-Command: POLYD=10 python3 1c_build_sdp_coulomb.py 4 && python3 2c_exact_coulomb.py
-reduced F sizes [4, 5, 3, 2] SOS sizes [49, 29, 29, 29, 28, 28, 28, 17] (0.2s)
-float SDP: optimal_inaccurate  e - E(TBP) = 2.9015125413422993e-08 (26.8s)
+Construction rerun (s = 1): 2026-10-04T04:07Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
+Command (in a copy of construction/): RIESZ_S=1 POLYD=10 python3 1c_build_sdp_coulomb.py 4 && RIESZ_S=1 python3 2c_exact_coulomb.py
+reduced F sizes [4, 5, 3, 2] SOS sizes [49, 29, 29, 29, 28, 28, 28, 17] (0.1s)
+float SDP: optimal_inaccurate  e - E(TBP) = 2.9015125413422993e-08 (31.3s)
 unknowns: 3946
-F columns built (26.9s)
-SOS columns built (27.2s)
-float residual max 3.2816462387230683e-06 (27.5s)
+F columns built (31.4s)
+SOS columns built (31.6s)
+float residual max 3.2816462387230683e-06 (31.8s)
 saved stage_s1.pkl
-rank 272 solved (1.1s)
-exact system satisfied (all 291 rows x 4 components); max |x - x_float| = 2.02e-07 (20.5s)
+rank 272 solved (0.7s)
+exact system satisfied (all 291 rows x 4 components); max |x - x_float| = 2.02e-07 (16.5s)
   F0 (size 4): PD at all 8 corners: True
   F1 (size 5): PD at all 8 corners: True
   F2 (size 3): PD at all 8 corners: True
@@ -21,12 +21,11 @@ exact system satisfied (all 291 rows x 4 components); max |x - x_float| = 2.02e-
   B5 (size 28): PD at all 8 corners: True
   B6 (size 28): PD at all 8 corners: True
   B7 (size 17): PD at all 8 corners: True
-positive definiteness: all blocks OK (227.6s)
-H > 0 on [-1,1] (2 intervals) and q > 0 on [-1,1] (3 intervals): H <= phi with equality only at -1, -1/2, 0 (229.1s)
-uniqueness: 25 feasible Gram matrices, energy E(TBP) only for the 10 TBP labellings (296.1s)
-wrote cert_n5_s1.json 24759 KB (296.6s)
+positive definiteness: all blocks OK (1690.8s)
+H > 0 on [-1,1] (2 intervals) and q > 0 on [-1,1] (3 intervals): H <= phi with equality only at -1, -1/2, 0 (1692.5s)
+uniqueness: 25 feasible Gram matrices, energy E(TBP) only for the 10 TBP labellings (1766.5s)
+wrote cert_n5_s1.json 24759 KB (1767.0s)
 
 Output sha256 vs. published certificate:
 c52ac18fb6f543e80a1a3868eecb1f045ee14ffe484ef0557601f393714be1e9  regenerated cert_n5_s1.json
-certificate/cert_n5_s1.json: OK
 IDENTICAL (byte for byte)

@@ -1,0 +1,13 @@
+{
+  "challenge_module": "N5R2.Challenge",
+  "solution_module": "N5R2.Solution",
+  "theorem_names": [
+    "FivePointsRiesz2.five_riesz2",
+    "FivePointsRiesz2.five_riesz2_unique"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

@@ -1,0 +1,31 @@
+Comparator run on lean/, 2026-10-04 (Linux x86_64), with lean/scripts/run_comparator.sh and lean/comparator.json
+
+Tool: leanprover/comparator fd5d5bcf14177b187f66d4502071268d877887c3 (own toolchain leanprover/lean4:v4.35.0-rc3),
+      with leanprover/lean4export 076e8e57707e813375e8f9da8bf989799ace9680 built on this project's toolchain.
+Config (lean/comparator.json):
+  challenge module  N5R2.Challenge   (statements with `sorry`)
+  solution module   N5R2.Solution    (the same statements, proved by N5R2.five_riesz2(_unique) of N5R2/Main.lean)
+  theorems          FivePointsRiesz2.five_riesz2, FivePointsRiesz2.five_riesz2_unique
+  permitted axioms  propext, Quot.sound, Classical.choice
+Sources: the 46 stored files of lean/ (every .lean file, comparator.json, the scripts, regen.sh, lakefile.toml,
+lake-manifest.json, lean-toolchain, gen/) were byte-identical (sha256) to lean/ as published with this record; the
+regenerated modules matched lean/ThomsonGen/scripts/generated.sha256.
+
+Sandbox: landrun was not installed. Comparator used its own non-sandboxing shim (scripts/fake-landrun.sh), so the
+builds and exports ran unsandboxed (the log says "THIS IS NOT REAL LANDRUN"). The sandbox protects the checking
+machine from the solution's build; it does not change the checks below.
+
+Preparation: all 41 modules of the closure (build_2026-10-04.tsv) were built with `lake build +<Module>`, one at a
+time in dependency order, all with exit code 0 (56 min in total; largest peak resident memory 9.0 GB, for the
+regenerated module ThomsonGen.M2); `lake build --no-build` then reported "All targets up-to-date".
+
+Run: 12 min wall time, peak resident memory 6.6 GB.
+Steps and result (from comparator_2026-10-04.log, warnings and replayed build messages omitted):
+  Building N5R2.Challenge                      (the two `sorry` warnings are the challenge statements)
+  Exporting N5R2.Challenge with lean4export
+  Building N5R2.Solution
+  Exporting N5R2.Solution with lean4export
+  Running Lean default kernel on solution.
+  Lean default kernel accepts the solution
+  Your solution is okay!
+  COMPARATOR EXIT: 0

@@ -1,0 +1,13 @@
+Run: 2026-10-04T04:59Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
+Command: python3 check/check_n5_odd.py certificate/cert_n5_s3.json 3
+sha256: certificate/cert_n5_s3.json: OK
+
+s = 3, D = 10, e = E_s(TBP) = 1/8 + 3/2 sqrt2 + 1/3 sqrt3
+(B) all 4 F' and 8 B' blocks symmetric and positive definite (8 box corners each) (204s)
+(A) identity holds exactly in all four K-components (210s)
+(C) H > 0 on [-1,1] and 1-(2-2t)^3 H^2 = (t+1)(2t+1)^2 t^2 q(t) with q > 0 on [-1,1] (2, 4 Bernstein intervals)
+(D) 25 PSD rank<=3 Gram matrices with entries in {-1,-1/2,0}; energy E(TBP) only for the 10 TBP labellings (278s)
+CERTIFICATE VERIFIED
+real 278.75
+user 270.67
+sys 3.01

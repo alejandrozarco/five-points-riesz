@@ -1,28 +1,37 @@
 # AI disclosure
 
 - **Who did the work.** AI models produced the content of this repository under the direction of the repository
-  owner (alejandrozarco). Claude Opus 5.5 (Anthropic) wrote all code, ran the computations, produced both certificates
-  (`cert_n5_s2.json` and `cert_n5_s1.json`) and wrote the text. Separate, read-only AI reviewers checked the package
+  owner (alejandrozarco). Claude Opus 5.5 (Anthropic) generated the new code and adapted the attributed upstream
+  code, including the Lean development; it ran the computations, produced the certificates (`cert_n5_s1.json` to `cert_n5_s6.json`, `cert_n5_s2_short.json`) and
+  wrote the text. Separate, read-only AI reviewers checked the package
   before each release (see below).
 - **The owner's role.** The owner chose the question, after a public question on the Lean Zulip about whether the new
   seven- and eight-point methods give a simpler five-point argument. The owner directed the work and decided on
   publication. The owner did not check the mathematics or the code line by line.
 - **What software checks.**
-  - `check/check_n5_s2.py` checks the s = 2 certificate in exact rational arithmetic (sympy, python-flint): the
-    polynomial identity, positive definiteness, H ≤ φ₂, and the uniqueness enumeration.
-  - `check/check_n5_s1.py` checks the Coulomb certificate:
+  - `check/check_n5_even.py` checks the certificates for s = 2, 4, 6 in exact rational arithmetic (sympy,
+    python-flint): the polynomial identity, positive definiteness, H ≤ φ_s, and the uniqueness enumeration.
+  - `check/check_n5_odd.py` checks the certificates for s = 1, 3, 5:
     - the identity, per component in K = Q(√2, √3);
     - positive definiteness at the 8 corners of a rational box of width 10⁻⁶⁰ around (√2, √3, √6), by convexity;
-    - H > 0 and 1 − (2−2t)H² = (t+1)(2t+1)²t² q with q > 0, by exact Bernstein coefficients;
+    - H > 0 and 1 − (2−2t)^s H² = (t+1)(2t+1)²t² q with q > 0, by exact Bernstein coefficients;
     - an exact sign test in K;
     - the uniqueness energies compared in K.
-  - Trusted beyond the checkers:
+  - For s = 2, the Lean development in `lean/` checks the whole statement (bound, minorant, minimality and
+    uniqueness) in the Lean kernel; Comparator compares its statement with `lean/N5R2/Challenge.lean`, and nanoda, an
+    independent type checker, rechecks an export of it (records in `verification/lean/`). What is trusted there is
+    the Lean kernel (or nanoda), the statement in `Challenge.lean`, and the definitions it imports from the
+    regenerated upstream preamble.
+  - Trusted beyond the Python checkers:
     - Python (including `fractions` and `math.isqrt`), sympy and python-flint;
     - the short mathematical arguments in README.md (Bachoc–Vallentin positivity, the triple-sum identity, the final
-      inequalities) and in the docstring of `check_n5_s1.py` (the sign test, the box/convexity and Bernstein
+      inequalities) and in the docstring of `check_n5_odd.py` (the sign test, the box/convexity and Bernstein
       arguments).
 
-    These arguments are written out but not formalised.
+    These arguments are written out but not formalised. For s = 2, Lean formalises the complete minimality and
+    uniqueness argument, using rational certificate checks, a Bernstein minorant proof, and geometric uniqueness. The
+    odd-s field and box-corner checks are not formalised.
+  - The floating-point sharpness scan (`scan/`) is not checked by anything; it is reported as an observation.
 - **AI reviews.**
   - **Version 1** (s = 2 only), reviewed by gpt-6-astra (OpenAI), 2026-10-03. The review found the mathematics in
     order and reran the checker. It also found:
@@ -45,4 +54,19 @@
     - the PSD test in the enumeration relied on sympy eigenvalues; it now uses exact principal minors;
     - corrections to the de Laat citation;
     - construction transcripts were to be archived.
+  - **Version 3** (s = 3, 4, 5, 6; checkers generalised to even and odd s; Lean formalisation for s = 2; sharpness
+    scan), reviewed by Claude Fable 5.1 and by gpt-6-astra, independently, 2026-10-04. Neither found a soundness defect
+    in the checkers, the README argument, or the Lean statement and proof; both reran checkers (Fable: s = 3, 4 and
+    the short s = 2 certificate, plus its own negative tests; Astra: s = 5), and Astra independently rechecked the
+    touching values of all six certificates. Findings, all addressed before publication:
+    - the short s = 2 certificate used by the Lean development was excluded by `.gitignore`;
+    - the scan: the solver's H reaches the stabilising cap at larger s, so the solver's accuracy there is lower
+      than first stated (Fable); the degree-12 and degree-14 runs kept the sum-of-squares degrees of degree 10, i.e.
+      tested a restricted SDP (Astra). Those runs were redone with the fix; the solver failed on almost all of them,
+      so the scan now reports degree 10 only, with weaker wording ("growing numerical discrepancies", no threshold);
+      the earlier runs are kept in `scan/` as superseded;
+    - missing attribution notes on Lean declarations adapted from huwngtran/thomson-n7-lean, and a sentence saying
+      no upstream code was included; stale paths in generated file headers; the package name in the lake manifest;
+    - wording: the scope of the Lean formalisation, the licence scope for adapted upstream material, the role of
+      the AI model in adapting code, and the manifest.
 - **Status.** AI reviews are not peer review. No human expert has checked this work.

@@ -1,0 +1,12 @@
+{"s": 4.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 6.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 6.5, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 7.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 7.5, "D": 12, "status": "optimal_inaccurate", "e": 0.5002137830461378, "E_TBP": 0.5002204218152437, "margin": -6.6387691058933385e-06, "rel": -1.327168747289843e-05, "resid": 3.6588100500849916e-06, "defect": 5.655502567551858e-06}
+{"s": 8.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 10.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 7.0, "D": 14, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 12.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 14.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 7.5, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}
+{"s": 8.0, "D": 12, "error": "Solver 'CLARABEL' failed. Try another solver, or solve with verbose=True for more information."}

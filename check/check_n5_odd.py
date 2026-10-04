@@ -1,11 +1,13 @@
-"""Independent exact checker for cert_n5_s1.json (N = 5 points on S^2, Coulomb s = 1).
+"""Independent exact checker for cert_n5_s<s>.json (N = 5 points on S^2, Riesz s odd: s = 1 (Coulomb), 3, 5, ...).
+
+usage: python3 check_n5_odd.py CERT.json S      (S = the odd Riesz exponent; phi(t) = (2-2t)^(-S/2))
 
 Numbers in the certificate lie in K = Q(sqrt2, sqrt3), written [a, b, c, d] = a + b sqrt2 + c sqrt3 + d sqrt6. The
 checker reads only the JSON and uses exact rational arithmetic throughout (sympy polynomial rings over QQ,
 python-flint, Python fractions), with exact sign decisions in K and an exact principal-minor PSD test in the
 uniqueness enumeration. It does not import the code that produced the certificate. It refuses to run with python -O.
 
-Claim checked, with phi(t) = (2 - 2t)^(-1/2) and E(TBP) = 1/2 + 3 sqrt2 + sqrt3:
+Claim checked, with phi(t) = (2 - 2t)^(-s/2) and E(TBP) = 2^-s + 6 * 2^(-s/2) + 3 * 3^(-s/2) (s = 1: 1/2 + 3 sqrt2 + sqrt3):
   (A) identity in K[u,v,t], checked as four identities in Q[u,v,t] (one per K-component; all structure is rational):
         (H(u)+H(v)+H(t))/3 - e/10 - R(u,v,t) = sum_r g_r z_r^T B_r z_r,  e = E(TBP),
       with R, S, Q_k, Sym, the reducers and the multipliers g_r exactly as in the s = 2 certificate;
@@ -13,11 +15,11 @@ Claim checked, with phi(t) = (2 - 2t)^(-1/2) and E(TBP) = 1/2 + 3 sqrt2 + sqrt3:
       (sqrt2, sqrt3, sqrt6), so it suffices that it is positive definite (exact leading minors) at the 8 corners of a
       rational box containing (sqrt2, sqrt3, sqrt6) (convexity of the positive definite cone);
   (C) H <= phi on [-1, 1) with equality exactly at -1, -1/2, 0: H > 0 on [-1, 1], and
-      1 - (2-2t) H(t)^2 = (t+1)(2t+1)^2 t^2 q(t) with q > 0 on [-1, 1]; both positivity claims via exact Bernstein
+      1 - (2-2t)^s H(t)^2 = (t+1)(2t+1)^2 t^2 q(t) with q > 0 on [-1, 1]; both positivity claims via exact Bernstein
       coefficients (exact subdivision) and exact signs in K;
   (D) uniqueness: equality forces every inner product into {-1, -1/2, 0}; among the 25 PSD rank <= 3 Gram matrices
       with such entries, energy E(TBP) occurs only for the 10 labellings of the TBP (exact comparisons in K).
-The deduction from (A)-(D) to "E_1(x) >= E_1(TBP) for all 5 distinct points, with equality only for the TBP" is the
+The deduction from (A)-(D) to "E_s(x) >= E_s(TBP) for all 5 distinct points, with equality only for the TBP" is the
 same as for s = 2 (see the README of the repository).
 """
 import json, sys, itertools, time, math
@@ -30,7 +32,10 @@ from flint import fmpq_mat, fmpq
 if not __debug__:
     raise SystemExit("assertions are disabled (python -O / PYTHONOPTIMIZE): refusing to run")
 t0 = time.time()
-C = json.load(open(sys.argv[1] if len(sys.argv) > 1 else "cert_n5_s1.json"))
+if len(sys.argv) != 3: raise SystemExit(__doc__)
+C = json.load(open(sys.argv[1])); RS = int(sys.argv[2])
+assert RS >= 1 and RS % 2 == 1, "odd s only"
+MS = RS // 2                                                  # s = 2 MS + 1
 def Kf(z):                                                    # K element as 4 Fractions
     assert isinstance(z, list) and len(z) == 4, "K element must have exactly 4 components"
     return tuple(Fr(x) for x in z)
@@ -57,10 +62,13 @@ kscale = lambda x, r: tuple(p * r for p in x)
 KZ = (Fr(0),) * 4
 
 n = C["n"]; D = C["D"]; e = Kf(C["e"])
-assert n == 5 and D == 10 and e == (Fr(1, 2), Fr(3), Fr(1), Fr(0))
+# E(TBP) = 2^-s + 6 * 2^(-s/2) + 3 * 3^(-s/2), with 2^(-s/2) = sqrt2 / 2^(MS+1) and 3^(-s/2) = sqrt3 / 3^(MS+1)
+E_TBP = (Fr(1, 2 ** RS), Fr(6, 2 ** (MS + 1)), Fr(3, 3 ** (MS + 1)), Fr(0))
+assert n == 5 and D % 2 == 0 and D >= 6 and e == E_TBP
+print(f"s = {RS}, D = {D}, e = E_s(TBP) = {e[0]} + {e[1]} sqrt2 + {e[2]} sqrt3", flush=True)
 assert len(C["H_chebyshev"]) == D + 1 and all(len(z) == 4 for z in C["H_chebyshev"])
 assert len(C["F_reducers"]) == len(C["F_reduced"]) == 4
-assert C["sos_degrees"] == [5, 4, 4, 4, 4, 4, 4, 3] and len(C["sos_reducers"]) == len(C["sos_reduced"]) == 8
+assert C["sos_degrees"] == [D // 2] + [D // 2 - 1] * 6 + [D // 2 - 2] and len(C["sos_reducers"]) == len(C["sos_reduced"]) == 8
 def nmon(d): return len([m for m in itertools.product(range(d + 1), repeat=3) if sum(m) <= d])
 for kk, (N, Fp) in enumerate(zip(C["F_reducers"], C["F_reduced"])):
     assert len(N) == D // 2 + 1 - kk and all(len(r) == len(Fp) for r in N) and all(len(r) == len(Fp) for r in Fp)
@@ -151,14 +159,16 @@ def pmul(p, r):
     for i, x in enumerate(p):
         for j, y in enumerate(r): o[i + j] = kadd(o[i + j], kmul(x, y))
     return o
-pp = [kscale(z, -1) for z in pmul([(Fr(2), Fr(0), Fr(0), Fr(0)), (Fr(-2), Fr(0), Fr(0), Fr(0))], pmul(Hm, Hm))]
+pp = pmul(Hm, Hm)
+for _ in range(RS): pp = pmul([(Fr(2), Fr(0), Fr(0), Fr(0)), (Fr(-2), Fr(0), Fr(0), Fr(0))], pp)
+pp = [kscale(z, -1) for z in pp]                             # - (2-2t)^s H^2
 pp[0] = kadd(pp[0], (Fr(1), Fr(0), Fr(0), Fr(0)))
 den = [Fr(0), Fr(0), Fr(1), Fr(5), Fr(8), Fr(4)]            # (t+1)(2t+1)^2 t^2 = t^2 + 5t^3 + 8t^4 + 4t^5
 num = list(pp); quo = [KZ] * (len(num) - len(den) + 1)
 for i in range(len(quo) - 1, -1, -1):
     c = kscale(num[i + len(den) - 1], Fr(1) / den[-1]); quo[i] = c
     for j, dv in enumerate(den): num[i + j] = kadd(num[i + j], kscale(c, -dv))
-assert all(ksign(z) == 0 for z in num), "1-(2-2t)H^2 is not divisible by (t+1)(2t+1)^2 t^2"
+assert all(ksign(z) == 0 for z in num), "1-(2-2t)^s H^2 is not divisible by (t+1)(2t+1)^2 t^2"
 def bern_pos(poly, a=Fr(-1), b=Fr(1), depth=0):
     nn = len(poly) - 1; sh = [KZ] * (nn + 1)
     for i, c in enumerate(poly):
@@ -171,7 +181,7 @@ def bern_pos(poly, a=Fr(-1), b=Fr(1), depth=0):
     m = (a + b) / 2
     return bern_pos(poly, a, m, depth + 1) + bern_pos(poly, m, b, depth + 1)
 nH, nq = bern_pos(Hm), bern_pos(quo)
-print(f"(C) H > 0 on [-1,1] and 1-(2-2t)H^2 = (t+1)(2t+1)^2 t^2 q(t) with q > 0 on [-1,1] ({nH}, {nq} Bernstein intervals)", flush=True)
+print(f"(C) H > 0 on [-1,1] and 1-(2-2t)^{RS} H^2 = (t+1)(2t+1)^2 t^2 q(t) with q > 0 on [-1,1] ({nH}, {nq} Bernstein intervals)", flush=True)
 
 def psd_exact(G):
     """exact: a real symmetric matrix is PSD iff all its principal minors are >= 0."""
@@ -185,7 +195,7 @@ for combo in itertools.product(vals, repeat=10):
     if G.rank() > 3 or not psd_exact(G): continue
     feas += 1
     a_, b_, c_ = combo.count(Fr(-1)), combo.count(Fr(-1, 2)), combo.count(Fr(0))
-    s = ksign((Fr(a_ - 1, 2), Fr(c_ - 6, 2), Fr(b_ - 3, 3), Fr(0)))   # E - E(TBP) = (a-1)/2 + (c-6)/sqrt2 + (b-3)/sqrt3
+    s = ksign((Fr(a_ - 1, 2 ** RS), Fr(c_ - 6, 2 ** (MS + 1)), Fr(b_ - 3, 3 ** (MS + 1)), Fr(0)))   # E - E(TBP)
     assert s >= 0
     if s == 0: found.append(combo)
 assert feas == 25 and len(found) == 10

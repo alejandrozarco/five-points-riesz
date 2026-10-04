@@ -1,0 +1,39 @@
+Build completed successfully (6 jobs).
+    Finished `release` profile [optimized] target(s) in 1.22s
+  4730558 255326007 /mnt/ssd/thomson/pub_n5/logs/second-kernel/five_riesz2.ndjson
+396a13dec841982adaeaf9cba7315abd63be2789a9a119a06e621f560eb3d13d five_riesz2.ndjson
+
+== nanoda on the export (expected: axioms propext, Quot.sound, Classical.choice; "Checked N declarations with no errors")
+theorem FivePointsRiesz2.five_riesz2 :
+  forall (x : Fin (OfNat.ofNat 5) → ThomsonN7.R3),
+  Membership.mem (ThomsonN7.SphereConfig (OfNat.ofNat 5)) x → LE.le
+    (FivePointsRiesz2.riesz2Energy FivePointsRiesz2.triBipyramid) (FivePointsRiesz2.riesz2Energy x) :=
+  _
+
+theorem FivePointsRiesz2.five_riesz2_unique :
+  forall (x : Fin (OfNat.ofNat 5) → ThomsonN7.R3),
+  Membership.mem (ThomsonN7.SphereConfig (OfNat.ofNat 5)) x → Eq (FivePointsRiesz2.riesz2Energy x)
+      (FivePointsRiesz2.riesz2Energy FivePointsRiesz2.triBipyramid) →
+  Exists
+    (fun (g : LinearIsometryEquiv (RingHom.id Real) ThomsonN7.R3 ThomsonN7.R3) =>
+    Exists
+      (fun (σ : Equiv.Perm (Fin (OfNat.ofNat 5))) =>
+      forall (i : Fin (OfNat.ofNat 5)),
+      Eq (x i) (DFunLike.coe g (FivePointsRiesz2.triBipyramid (DFunLike.coe σ i))))) :=
+  _
+
+axiom propext {a b : Prop} : Iff a b → Eq a b
+
+axiom Quot.sound.{u} {α : Sort u} {r : α → α → Prop} {a b : α} : r a b → Eq (Quot.mk r a) (Quot.mk r b)
+
+axiom Classical.choice.{u} {α : Sort u} : Nonempty α → α
+
+Checked 41928 declarations with no errors
+
+== negative control: literal 10279028337839033858341133628 changed to 10279028337839033858341133630
+negative control ok: nanoda rejected the tampered export
+thread 'main' (3279592) panicked at src/tc.rs:955:71:
+assertion failed: self.def_eq(u, v)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+SECOND KERNEL: OK (export accepted, tampered export rejected)

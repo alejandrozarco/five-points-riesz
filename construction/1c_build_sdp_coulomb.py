@@ -1,14 +1,16 @@
-"""Stage 1 of 2 for the Coulomb case (N = 5, s = 1, phi(t) = (2-2t)^(-1/2)): exact facial reduction at the triangular
-bipyramid (TBP), float SDP in the reduced coordinates, and the exact linear system of the certificate, with right-hand
-side in K = Q(sqrt2, sqrt3) stored as four rational components. Writes stage_s1.pkl.
+"""Stage 1 of 2 for odd s (N = 5; s = 1 is the Coulomb case; phi(t) = (2-2t)^(-s/2)): exact facial reduction at the
+triangular bipyramid (TBP), float SDP in the reduced coordinates, and the exact linear system of the certificate, with
+right-hand side in K = Q(sqrt2, sqrt3) stored as four rational components. Writes stage_s<s>.pkl.
 
-Differences from 1_build_sdp.py (s = 2):
+Differences from 1_build_sdp.py (even s):
   - the touching conditions H = phi, H' = phi' at the TBP inner products are imposed only in the exact stage
     (NOTOUCH=1, the default): with irrational targets, Clarabel failed numerically when they were also float constraints;
   - every PSD block is written as Y + MU0*I with Y PSD (MU0 = 2e-7, the default). This gives numerical slack; positive
     definiteness after the exact projection is established by the exact box-corner checks of stage 2.
 Next: 2c_exact_coulomb.py.
-usage: POLYD=10 python3 1c_build_sdp_coulomb.py 4      (needs polyk.py in this directory)
+usage: RIESZ_S=1 POLYD=10 python3 1c_build_sdp_coulomb.py 4      (odd s from RIESZ_S, default 1; needs polyk.py here)
+For odd s = 2M+1 all touching values and E(TBP) lie in K = Q(sqrt2, sqrt3); for s > 1 the sampled constraint is
+H <= min(phi, 20 E(TBP) + 10), which is stronger, for conditioning (the s = 1 run is unchanged).
 """
 import os
 os.environ.setdefault("NOTOUCH", "1"); os.environ.setdefault("MU0", "2e-7")
@@ -21,8 +23,11 @@ from flint import fmpq, fmpq_mat
 D = int(os.environ.get("POLYD", "10"))
 K = int(sys.argv[1]) if len(sys.argv) > 1 else 4
 n = 5; NPAIRS = 10
-# Coulomb: E(TBP) = 1/2 + 3*sqrt2 + sqrt3, stored as K-components (1, sqrt2, sqrt3, sqrt6)
-E_TBP_K = (Fr(1, 2), Fr(3), Fr(1), Fr(0))
+RS = int(os.environ.get("RIESZ_S", "1")); assert RS >= 1 and RS % 2 == 1, "odd s only"
+MS = RS // 2                                   # s = 2 MS + 1
+# E(TBP) = 2^-s + 6 * 2^(-s/2) + 3 * 3^(-s/2) = 2^-s + 6/2^(MS+1) sqrt2 + 3/3^(MS+1) sqrt3, as K-components
+# (1, sqrt2, sqrt3, sqrt6); Coulomb (s = 1): 1/2 + 3 sqrt2 + sqrt3
+E_TBP_K = (Fr(1, 2 ** RS), Fr(6, 2 ** (MS + 1)), Fr(3, 3 ** (MS + 1)), Fr(0))
 SIZES = [D // 2 + 1 - k for k in range(K)]
 DA = (D // 2, D // 2 - 1, D // 2 - 2)
 half = Fr(1, 2)
@@ -171,14 +176,18 @@ pr.add_identity(slack, fblocks, "slack", [np.array(M, dtype=float) for M in SRED
 hc = pr.vars["hc"]
 def Hrow(t, j=0):
     return C.chebval(t, C.chebder(np.eye(D + 1), j) if j else np.eye(D + 1))
-# phi(t) = (2-2t)^(-1/2): phi(-1)=1/2, phi(-1/2)=sqrt3/3, phi(0)=sqrt2/2, phi'(-1/2)=sqrt3/9, phi'(0)=sqrt2/4
-TOUCH = [(-1.0, 0, (Fr(1, 2), 0, 0, 0)), (-0.5, 0, (0, 0, Fr(1, 3), 0)), (0.0, 0, (0, Fr(1, 2), 0, 0)), (-0.5, 1, (0, 0, Fr(1, 9), 0)), (0.0, 1, (0, Fr(1, 4), 0, 0))]
+# phi(t) = (2-2t)^(-s/2), phi'(t) = s (2-2t)^(-s/2-1); s = 1: phi(-1)=1/2, phi(-1/2)=sqrt3/3, phi(0)=sqrt2/2,
+# phi'(-1/2)=sqrt3/9, phi'(0)=sqrt2/4
+TOUCH = [(-1.0, 0, (Fr(1, 2 ** RS), 0, 0, 0)), (-0.5, 0, (0, 0, Fr(1, 3 ** (MS + 1)), 0)), (0.0, 0, (0, Fr(1, 2 ** (MS + 1)), 0, 0)),
+         (-0.5, 1, (0, 0, Fr(RS, 3 ** (MS + 2)), 0)), (0.0, 1, (0, Fr(RS, 2 ** (MS + 2)), 0, 0))]
 KV = lambda c: float(c[0]) + float(c[1]) * 2 ** 0.5 + float(c[2]) * 3 ** 0.5 + float(c[3]) * 6 ** 0.5
 for t, j, val in ([] if os.environ.get("NOTOUCH") else TOUCH):
     pr.cons.append(Hrow(t, j) @ hc == KV(val))
-phi = lambda t: (2 - 2 * np.asarray(t, float)) ** -0.5
+phi = lambda t: (2 - 2 * np.asarray(t, float)) ** (-RS / 2)
 ts = pk.sample_grid(-1.0, 0.9999, 3000, [-1.0, -0.5, 0.0], 0.02)
-pr.cons.append(C.chebvander(ts, D) @ hc <= phi(ts))
+fv = phi(ts)
+if RS > 1: fv = np.minimum(fv, 20 * KV(E_TBP_K) + 10)    # H <= min(phi, cap) is stronger, so still valid; conditioning
+pr.cons.append(C.chebvander(ts, D) @ hc <= fv)           # (s = 1 runs without the cap, as published)
 OBJ = pr.vars["e"][0]
 prob = pr.solve_rowreduced(OBJ, verbose=False, tol=1e-9)
 xs = pr.xs()
@@ -271,6 +280,6 @@ res = [sum(float(c) * x0[ci] for ci, c in A[i].items()) - bf[i] for i in range(n
 print("float residual max", max(abs(r) for r in res), f"({time.time()-t0:.1f}s)", flush=True)
 import pickle
 pickle.dump(dict(A=A, bK=bK, xt=xt, x0=x0, cols=cols, nrow=nrow, ncol=ncol, Fred=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in Fred],
-                 SRED=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in SRED], TOUCH=[(t, j, [str(x) for x in v]) for t, j, v in TOUCH]),
-            open("stage_s1.pkl", "wb"))
-print("saved stage_s1.pkl", flush=True)
+                 SRED=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in SRED], TOUCH=[(t, j, [str(x) for x in v]) for t, j, v in TOUCH], RS=RS, D=D),
+            open(f"stage_s{RS}.pkl", "wb"))
+print(f"saved stage_s{RS}.pkl", flush=True)

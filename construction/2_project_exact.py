@@ -1,5 +1,5 @@
 """Stage 2 of 3: exact least-norm projection of the float SDP solution onto the affine space of exact certificates
-(identity with e = 17/4 and the touching conditions), using a common dyadic denominator. Reads stage.pkl, writes stage2.pkl."""
+(identity with e = E_s(TBP) and the touching conditions), using a common dyadic denominator. Reads stage.pkl, writes stage2.pkl."""
 import pickle, time, sys
 from fractions import Fraction as Fr
 from flint import fmpq_mat, fmpq, fmpz_mat, fmpz

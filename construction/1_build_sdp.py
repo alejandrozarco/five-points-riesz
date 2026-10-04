@@ -1,11 +1,13 @@
-"""Stage 1 of 3 (N = 5, Riesz s = 2): exact facial reduction at the triangular bipyramid (TBP), float SDP in the
-reduced coordinates, and the exact linear system of the certificate. Writes stage.pkl.
+"""Stage 1 of 3 for even s (N = 5; RIESZ_S = 2, 4, 6, ...; phi(t) = (2-2t)^(-s/2)): exact facial reduction at the
+triangular bipyramid (TBP), float SDP in the reduced coordinates, and the exact linear system of the certificate.
+Writes stage.pkl. For s > 2 the sampled constraint is H <= min(phi, 20 E(TBP) + 10), which is stronger, for
+conditioning (the s = 2 run is unchanged).
 
   1. exact facial-reduction bases from sharpness at the TBP (kernel matrices Z_k and SOS zero conditions);
   2. float SDP (cvxpy + Clarabel, degree D = 10): maximise e with H touching phi at -1, -1/2, 0;
   3. exact constraint rows: the polynomial identity (one row per monomial of degree <= D) and the 5 touching rows.
 Next: 2_project_exact.py, then 3_check_and_write.py.
-usage: POLYD=10 python3 1_build_sdp.py [K=4]      (needs polyk.py in this directory)
+usage: RIESZ_S=2 POLYD=10 python3 1_build_sdp.py [K=4]      (needs polyk.py in this directory)
 """
 import sys, os, json, itertools, time
 from fractions import Fraction as Fr
@@ -15,7 +17,10 @@ from flint import fmpq, fmpq_mat
 
 D = int(os.environ.get("POLYD", "10"))
 K = int(sys.argv[1]) if len(sys.argv) > 1 else 4
-n = 5; NPAIRS = 10; E_TBP = Fr(17, 4)
+RS = int(os.environ.get("RIESZ_S", "2")); assert RS >= 2 and RS % 2 == 0, "even s only"
+KS = RS // 2                                    # phi(t) = (2-2t)^(-KS)
+n = 5; NPAIRS = 10
+E_TBP = Fr(1, 4 ** KS) + 6 * Fr(1, 2 ** KS) + 3 * Fr(1, 3 ** KS)      # 17/4 for s = 2
 SIZES = [D // 2 + 1 - k for k in range(K)]
 DA = (D // 2, D // 2 - 1, D // 2 - 2)
 half = Fr(1, 2)
@@ -158,15 +163,19 @@ pr.add_identity(slack, fblocks, "slack", [np.array(M, dtype=float) for M in SRED
 hc = pr.vars["hc"]
 def Hrow(t, j=0):
     return C.chebval(t, C.chebder(np.eye(D + 1), j) if j else np.eye(D + 1))
-TOUCH = [(-1.0, 0, Fr(1, 4)), (-0.5, 0, Fr(1, 3)), (0.0, 0, Fr(1, 2)), (-0.5, 1, Fr(2, 9)), (0.0, 1, Fr(1, 2))]
+# phi and phi' = 2 KS (2-2t)^(-KS-1) at the TBP inner products -1, -1/2, 0
+TOUCH = [(-1.0, 0, Fr(1, 4 ** KS)), (-0.5, 0, Fr(1, 3 ** KS)), (0.0, 0, Fr(1, 2 ** KS)),
+         (-0.5, 1, Fr(2 * KS, 3 ** (KS + 1))), (0.0, 1, Fr(2 * KS, 2 ** (KS + 1)))]
 for t, j, val in TOUCH:
     pr.cons.append(Hrow(t, j) @ hc == float(val))
-phi = lambda t: 1.0 / (2 - 2 * np.asarray(t, float))
+phi = lambda t: 1.0 / (2 - 2 * np.asarray(t, float)) ** KS
 ts = pk.sample_grid(-1.0, 0.9999, 3000, [-1.0, -0.5, 0.0], 0.02)
-pr.cons.append(C.chebvander(ts, D) @ hc <= phi(ts))
+fv = phi(ts)
+if RS > 2: fv = np.minimum(fv, 20 * float(E_TBP) + 10)   # H <= min(phi, cap) is stronger, so still valid; conditioning
+pr.cons.append(C.chebvander(ts, D) @ hc <= fv)          # (s = 2 runs without the cap, as published)
 prob = pr.solve_rowreduced(pr.vars["e"][0], verbose=False, tol=1e-12)
 xs = pr.xs()
-print("float SDP:", prob.status, " e - 17/4 =", float(xs["e"][0]) - 4.25, f"({time.time()-t0:.1f}s)", flush=True)
+print("float SDP:", prob.status, " e - E_TBP =", float(xs["e"][0]) - float(E_TBP), f"({time.time()-t0:.1f}s)", flush=True)
 
 # ------------------------------------------------------------------ 3. exact linear system and projection
 # unknowns: hc[0..D], then for each F block the upper triangle, then for each SOS block the upper triangle
@@ -183,7 +192,7 @@ print("unknowns:", len(cols), flush=True)
 def tofr(M):
     return [[Fr(int(sy.fraction(x)[0]), int(sy.fraction(x)[1])) for x in M.row(i)] for i in range(M.shape[0])]
 FredF = [tofr(M) for M in Fred]; SREDF = [tofr(M) for M in SRED]
-# polynomial for each unknown (coefficient of the unknown in  slack - SOS ; identity:  sum = e/10 = 17/40)
+# polynomial for each unknown (coefficient of the unknown in  slack - SOS ; identity:  sum = e/10 = E_TBP/10)
 Hcols = []
 for j in range(D + 1):
     tj = cheb_mono(j)
@@ -254,6 +263,7 @@ res = [sum(c * xt[ci] for ci, c in A[i].items()) - b[i] for i in range(nrow)]
 print("float residual max", float(max(abs(r) for r in res)), f"({time.time()-t0:.1f}s)", flush=True)
 import pickle
 pickle.dump(dict(A=A, b=b, xt=xt, x0=x0, cols=cols, nrow=nrow, ncol=ncol, Fred=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in Fred],
-                 SRED=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in SRED], TOUCH=[(t, j, str(v)) for t, j, v in TOUCH]),
+                 SRED=[[[str(v) for v in M.row(i)] for i in range(M.shape[0])] for M in SRED], TOUCH=[(t, j, str(v)) for t, j, v in TOUCH],
+                 RS=RS, D=D, E_TBP=str(E_TBP)),
             open("stage.pkl", "wb"))
 print("saved stage.pkl", flush=True)

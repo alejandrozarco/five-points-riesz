@@ -1,0 +1,31 @@
+Construction rerun (s = 5): 2026-10-04T04:45Z, macOS arm64, Python 3.9.6, numpy 1.26.4, scipy 1.13.1, cvxpy 1.7.5, Clarabel 0.11.1, sympy 1.14.0, python-flint 0.6.0
+Command (in a copy of construction/): RIESZ_S=5 POLYD=10 python3 1c_build_sdp_coulomb.py 4 && RIESZ_S=5 python3 2c_exact_coulomb.py
+reduced F sizes [4, 5, 3, 2] SOS sizes [49, 29, 29, 29, 28, 28, 28, 17] (0.2s)
+float SDP: optimal_inaccurate  e - E(TBP) = 1.0019618845724665e-07 (23.6s)
+unknowns: 3946
+F columns built (23.8s)
+SOS columns built (24.1s)
+float residual max 4.9456480192972e-06 (24.4s)
+saved stage_s5.pkl
+rank 272 solved (1.1s)
+exact system satisfied (all 291 rows x 4 components); max |x - x_float| = 4.17e-07 (20.1s)
+  F0 (size 4): PD at all 8 corners: True
+  F1 (size 5): PD at all 8 corners: True
+  F2 (size 3): PD at all 8 corners: True
+  F3 (size 2): PD at all 8 corners: True
+  B0 (size 49): PD at all 8 corners: True
+  B1 (size 29): PD at all 8 corners: True
+  B2 (size 29): PD at all 8 corners: True
+  B3 (size 29): PD at all 8 corners: True
+  B4 (size 28): PD at all 8 corners: True
+  B5 (size 28): PD at all 8 corners: True
+  B6 (size 28): PD at all 8 corners: True
+  B7 (size 17): PD at all 8 corners: True
+positive definiteness: all blocks OK (237.0s)
+H > 0 on [-1,1] (2 intervals) and q > 0 on [-1,1] (3 intervals): H <= phi with equality only at -1, -1/2, 0 (239.5s)
+uniqueness: 25 feasible Gram matrices, energy E(TBP) only for the 10 TBP labellings (312.5s)
+wrote cert_n5_s5.json 24778 KB (313.0s)
+
+Output sha256 vs. published certificate:
+0fa79dae60b49f95ad2c36c3e6c4482da1e7d5c4eee5b455635ac4fa526cf5cb  regenerated cert_n5_s5.json
+IDENTICAL (byte for byte)

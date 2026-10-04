@@ -1,4 +1,6 @@
-"""Independent exact checker for cert_n5_s2.json (N = 5 points on S^2, Riesz s = 2).
+"""Independent exact checker for cert_n5_s<s>.json (N = 5 points on S^2, Riesz s even: s = 2, 4, 6, ...).
+
+usage: python3 check_n5_even.py CERT.json S      (S = the even Riesz exponent; phi(t) = (2-2t)^(-S/2))
 
 Reads only the JSON and recomputes everything exactly: rational arithmetic (sympy polynomial rings over QQ,
 python-flint), and an exact principal-minor PSD test in the uniqueness enumeration. It does not import the code
@@ -10,14 +12,14 @@ Claim checked (A)-(C):
         R = (n-2) S(u,v,t) + S(u,u,1) + S(v,v,1) + S(t,t,1) + S(1,1,1)/(n-1),
         S = sum_k sum_{a,b} F_k[a,b] Sym(u^a v^b Q_k(u,v,t)),  Sym = average over the 6 permutations of (u,v,t),
         Q_0 = 1, Q_1 = t - uv, Q_{k+1} = 2 (t - uv) Q_k - (1-u^2)(1-v^2) Q_{k-1},
-        F_k = N_k F'_k N_k^T, B_r = M_r B'_r M_r^T, e = 17/4;
+        F_k = N_k F'_k N_k^T, B_r = M_r B'_r M_r^T, e = E_s(TBP) = 4^(-s/2) + 6 * 2^(-s/2) + 3 * 3^(-s/2);
   (B) every F'_k and B'_r is positive definite (exact leading principal minors), so F_k, B_r are PSD;
-  (C) phi(t) - H(t) >= 0 on [-1, 1), phi(t) = 1/(2-2t), with equality exactly at t in {-1, -1/2, 0}.
+  (C) phi(t) - H(t) >= 0 on [-1, 1), phi(t) = (2-2t)^(-s/2), with equality exactly at t in {-1, -1/2, 0}.
 Then, for any 5 distinct points with Gram entries t_ij: g_r >= 0 on Gram-feasible triples, the Bachoc-Vallentin
 positivity sum_{i,j,l} S(t_ij, t_il, t_jl) >= 0, and sum over the 10 triples of R = (1/2) sum_{i,j,l} S give
-sum_{i<j} H(t_ij) >= e; with (C), E_2 = sum phi(t_ij) >= 17/4 = E_2(TBP).
+sum_{i<j} H(t_ij) >= e; with (C), E_s = sum phi(t_ij) >= e = E_s(TBP).
 (D) uniqueness: equality forces every t_ij in {-1, -1/2, 0}; enumerate all such Gram matrices that are PSD of rank
-    <= 3 and check that energy 17/4 occurs only for the TBP Gram matrix up to relabelling.
+    <= 3 and check that energy <= E_s(TBP) occurs only for the TBP Gram matrix up to relabelling.
 """
 import json, sys, itertools, time
 from fractions import Fraction as Fr
@@ -27,15 +29,20 @@ from sympy.polys.rings import ring
 if not __debug__:
     raise SystemExit("assertions are disabled (python -O / PYTHONOPTIMIZE): refusing to run")
 t0 = time.time()
-C = json.load(open(sys.argv[1] if len(sys.argv) > 1 else "cert_n5_s2.json"))
+if len(sys.argv) != 3: raise SystemExit(__doc__)
+C = json.load(open(sys.argv[1])); RS = int(sys.argv[2])
+assert RS >= 2 and RS % 2 == 0, "even s only"
+KS = RS // 2
+E_TBP = Fr(1, 4 ** KS) + 6 * Fr(1, 2 ** KS) + 3 * Fr(1, 3 ** KS)
 q = lambda s: QQ(Fr(s).numerator, Fr(s).denominator)
 R3, u, v, t = ring("u,v,t", QQ)
 n = C["n"]; e = q(C["e"]); D = C["D"]
-assert n == 5 and e == QQ(17, 4) and D == 10
+assert n == 5 and e == QQ(E_TBP.numerator, E_TBP.denominator) and D % 2 == 0 and D >= 6
+print(f"s = {RS}, D = {D}, e = {C['e']} = E_s(TBP)", flush=True)
 # structure of the certificate (so that no block can be silently dropped by zip/truncation)
 assert len(C["H_chebyshev"]) == D + 1
 assert len(C["F_reducers"]) == len(C["F_reduced"]) == 4
-assert C["sos_degrees"] == [5, 4, 4, 4, 4, 4, 4, 3]
+assert C["sos_degrees"] == [D // 2] + [D // 2 - 1] * 6 + [D // 2 - 2]
 assert len(C["sos_reducers"]) == len(C["sos_reduced"]) == 8
 def nmon(d): return len([m for m in itertools.product(range(d + 1), repeat=3) if sum(m) <= d])
 for k, (N, Fp) in enumerate(zip(C["F_reducers"], C["F_reduced"])):
@@ -107,17 +114,17 @@ print(f"(A) identity holds exactly in Q[u,v,t] ({time.time()-t0:.0f}s)", flush=T
 # (C) phi - H >= 0 on [-1, 1), touching exactly at -1, -1/2, 0
 x = symbols("x")
 Hx = sum(Rational(Fr(c).numerator, Fr(c).denominator) * __import__("sympy").chebyshevt(j, x) for j, c in enumerate(C["H_chebyshev"]))
-pnum = Poly(expand(1 - (2 - 2 * x) * Hx), x)          # = (2-2x)(phi - H)
+pnum = Poly(expand(1 - (2 - 2 * x) ** KS * Hx), x)    # = (2-2x)^(s/2) (phi - H)
 quo, rem = div(pnum, Poly((x + 1) * (2 * x + 1) ** 2 * x ** 2, x))
 assert rem.is_zero and quo.count_roots(-1, 1) == 0 and quo.eval(0) > 0
-print(f"(C) 1-(2-2x)H(x) = (x+1)(2x+1)^2 x^2 q(x), q > 0 on [-1,1] (deg q = {quo.degree()})", flush=True)
+print(f"(C) 1-(2-2x)^{KS} H(x) = (x+1)(2x+1)^2 x^2 q(x), q > 0 on [-1,1] (deg q = {quo.degree()})", flush=True)
 
 def psd_exact(G):
     """exact: a real symmetric matrix is PSD iff all its principal minors are >= 0."""
     m = G.shape[0]
     return all(G.extract(list(S_), list(S_)).det() >= 0 for r_ in range(1, m + 1) for S_ in itertools.combinations(range(m), r_))
 # (D) uniqueness by enumeration of Gram matrices with entries in {-1, -1/2, 0}
-vals = [Fr(-1), Fr(-1, 2), Fr(0)]; phi = {Fr(-1): Fr(1, 4), Fr(-1, 2): Fr(1, 3), Fr(0): Fr(1, 2)}
+vals = [Fr(-1), Fr(-1, 2), Fr(0)]; phi = {c: 1 / (2 - 2 * c) ** KS for c in vals}
 pairs = list(itertools.combinations(range(5), 2)); found = []; feasible = 0
 for combo in itertools.product(vals, repeat=10):
     G = [[Fr(1) if i == j else Fr(0) for j in range(5)] for i in range(5)]
@@ -127,11 +134,11 @@ for combo in itertools.product(vals, repeat=10):
     if not psd_exact(M): continue                                  # PSD (exact rational principal minors)
     feasible += 1
     E = sum(phi[c] for c in combo)
-    if E <= Fr(17, 4): found.append((E, combo))
-print(f"(D) PSD rank<=3 Gram matrices with entries in {{-1,-1/2,0}}: {feasible}; with energy <= 17/4: {len(found)}")
+    if E <= E_TBP: found.append((E, combo))
+print(f"(D) PSD rank<=3 Gram matrices with entries in {{-1,-1/2,0}}: {feasible}; with energy <= E_s(TBP): {len(found)}")
 assert feasible == 25 and len(found) == 10
 tbp_multiset = sorted([Fr(-1)] + [Fr(0)] * 6 + [Fr(-1, 2)] * 3)
-assert all(E == Fr(17, 4) and sorted(c) == tbp_multiset for E, c in found)
+assert all(E == E_TBP and sorted(c) == tbp_multiset for E, c in found)
 # all found Gram matrices are TBP up to relabelling: one antipodal pair, the other three mutually at -1/2
 for E, combo in found:
     G = {p: c for p, c in zip(pairs, combo)}

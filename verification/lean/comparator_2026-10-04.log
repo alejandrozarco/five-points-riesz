@@ -1,0 +1,89 @@
+Build completed successfully (6 jobs).
+Build completed successfully (15 jobs).
+WARNING: no landrun found, using the non-sandboxing shim /mnt/ssd/thomson/pubtest_log/.tools/comparator/scripts/fake-landrun.sh
+Building N5R2.Challenge
+WARNING: THIS IS NOT REAL LANDRUN! UNSAFELY RUNNING exec lake build N5R2.Challenge
+⚠ [8925/8925] Replayed N5R2.Challenge
+warning: N5R2/Challenge.lean:33:8: declaration uses `sorry`
+warning: N5R2/Challenge.lean:37:8: declaration uses `sorry`
+Build completed successfully (8925 jobs).
+WARNING: THIS IS NOT REAL LANDRUN! UNSAFELY RUNNING exec /mnt/ssd/thomson/pubtest_log/.tools/lean4export/.lake/build/bin/lean4export N5R2.Challenge -- Quot Quot.mk Quot.lift Quot.ind FivePointsRiesz2.five_riesz2 FivePointsRiesz2.five_riesz2_unique propext Quot.sound Classical.choice Nat.add Nat.sub Nat.mul Nat.pow Nat.gcd Nat.div Nat.mod Nat.beq Nat.ble Nat.land Nat.lor Nat.xor Nat.shiftLeft Nat.shiftRight String.ofList Char.ofNat List eagerReduce Nat String String.mk Char optParam autoParam semiOutParam outParam
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, FivePointsRiesz2.five_riesz2, FivePointsRiesz2.five_riesz2_unique, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from N5R2.Challenge
+Building N5R2.Solution
+WARNING: THIS IS NOT REAL LANDRUN! UNSAFELY RUNNING exec lake build N5R2.Solution
+⚠ [8925/8962] Replayed ThomsonGen.ThreePoint
+warning: ThomsonGen/ThreePoint.lean:161:30: This simp argument is unused:
+  real_inner_self_eq_norm_sq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Set.domRestrict, v, hx]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: ThomsonGen/ThreePoint.lean:206:65: This simp argument is unused:
+  Pi.star_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [matDot, Matrix.sum_apply, Matrix.vecMulVec_apply, star_trivial, dotProduct, Matrix.mulVec,
+    Finset.sum_mul, Finset.mul_sum]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: ThomsonGen/ThreePoint.lean:243:85: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+⚠ [8927/8962] Replayed ThomsonGen.Cert1
+warning: ThomsonGen/Cert1.lean:48:19: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Cert1.lean:48:31: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Cert1.lean:49:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: ThomsonGen/Cert1.lean:49:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: ThomsonGen/Cert1.lean:74:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: ThomsonGen/Cert1.lean:74:20: `if_neg` has been deprecated: Use `ite_eq_right` instead
+⚠ [8934/8962] Replayed ThomsonGen.Typed
+warning: ThomsonGen/Typed.lean:156:8: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Typed.lean:159:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Typed.lean:159:21: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Typed.lean:160:10: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: ThomsonGen/Typed.lean:160:21: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: ThomsonGen/Typed.lean:200:10: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Typed.lean:200:20: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: ThomsonGen/Typed.lean:163:27: Variable name `hn` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hn
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+⚠ [8937/8962] Replayed ThomsonGen.Cert.NBlk
+warning: ThomsonGen/Cert/NBlk.lean:146:39: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: ThomsonGen/Cert/NBlk.lean:146:39: Unused tactic linter: `omega` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: ThomsonGen/Cert/NBlk.lean:282:4: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: ThomsonGen/Cert/NBlk.lean:325:41: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: ThomsonGen/Cert/NBlk.lean:325:41: Unused tactic linter: `omega` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: ThomsonGen/Cert/NBlk.lean:561:80: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: ThomsonGen/Cert/NBlk.lean:561:80: Unused tactic linter: `rfl` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Build completed successfully (8962 jobs).
+WARNING: THIS IS NOT REAL LANDRUN! UNSAFELY RUNNING exec /mnt/ssd/thomson/pubtest_log/.tools/lean4export/.lake/build/bin/lean4export N5R2.Solution -- Quot Quot.mk Quot.lift Quot.ind FivePointsRiesz2.five_riesz2 FivePointsRiesz2.five_riesz2_unique propext Quot.sound Classical.choice Nat.add Nat.sub Nat.mul Nat.pow Nat.gcd Nat.div Nat.mod Nat.beq Nat.ble Nat.land Nat.lor Nat.xor Nat.shiftLeft Nat.shiftRight String.ofList Char.ofNat List eagerReduce Nat String String.mk Char optParam autoParam semiOutParam outParam
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, FivePointsRiesz2.five_riesz2, FivePointsRiesz2.five_riesz2_unique, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from N5R2.Solution
+Running Lean default kernel on solution.
+Lean default kernel accepts the solution
+Your solution is okay!
+real 729.71
+user 693.64
+sys 36.82
+COMPARATOR EXIT: 0
