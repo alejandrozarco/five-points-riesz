@@ -6,10 +6,14 @@ Status: **produced by AI models under the direction of the repository owner; not
 [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md)).
 
 > [!IMPORTANT]
-> This repository is an AI-produced **warrant**: computer-checked certificates that no human has digested. The
-> theorems they certify are already known (Schwartz; see below). What is new here, as far as we know, is the form of
-> the certificates. Corrections and comments are welcome via GitHub issues. Credit for a human-readable treatment
-> belongs to whoever writes one.
+> This repository is a public, timestamped, AI-produced **warrant** for the uniqueness of the triangular bipyramid as
+> the minimiser of the Riesz $`s`$-energy of five points on $`S^2`$ for $`s = 1, \dots, 6`$: a machine-checked
+> argument that no human has yet digested. The theorems it certifies are already known (Schwartz; see below); what is
+> new here, as far as we know, is the form of the certificates. Independent verification and human-readable
+> expositions are welcome, and credit for a human-readable treatment of this argument belongs to whoever writes one.
+> To refer to the computational result, please cite the archived repository
+> ([10.5281/zenodo.23125753](https://doi.org/10.5281/zenodo.23125753)). Questions, checks and corrections:
+> [GitHub issues](https://github.com/alejandrozarco/five-points-riesz/issues).
 
 ## Statement
 
